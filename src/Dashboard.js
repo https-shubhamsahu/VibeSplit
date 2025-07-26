@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { auth, provider } from "./firebase";
+import { auth, googleProvider } from "./firebase";
 import { signInWithPopup, onAuthStateChanged, signOut } from "firebase/auth";
 
 const options = [
@@ -48,7 +48,7 @@ export default function Dashboard() {
   const handleGoogleLogin = async () => {
     setLoading(true);
     try {
-      await signInWithPopup(auth, provider);
+      await signInWithPopup(auth, googleProvider);
     } catch (error) {
       console.error("Sign-in error:", error);
       if (error.code === 'auth/popup-blocked') {
