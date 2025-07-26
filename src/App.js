@@ -10,7 +10,7 @@ import "./styles.css";
 
 export default function App() {
   return (
-    <Router>
+    <Router basename="/VibeSplit">
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/dashboard" element={<Dashboard />} />
