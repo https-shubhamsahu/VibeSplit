@@ -19,6 +19,19 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
-export const auth = getAuth(app);
-export const provider = new GoogleAuthProvider();
-export const db = getFirestore(app);
+
+// Initialize services
+const auth = getAuth(app);
+const db = getFirestore(app);
+const googleProvider = new GoogleAuthProvider();
+
+// Configure Google Auth Provider with custom parameters
+googleProvider.setCustomParameters({
+  // Force account selection even when one account is available
+  prompt: 'select_account',
+  // Handle mobile browser issues
+  mobile: true
+});
+
+// Export the services
+export { auth, db, googleProvider };

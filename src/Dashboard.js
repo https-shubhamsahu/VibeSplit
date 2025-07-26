@@ -49,8 +49,13 @@ export default function Dashboard() {
     setLoading(true);
     try {
       await signInWithPopup(auth, provider);
-    } catch (e) {
-      alert("Google login failed. Please try again.");
+    } catch (error) {
+      console.error("Sign-in error:", error);
+      if (error.code === 'auth/popup-blocked') {
+        alert('Please allow popups for this website to sign in with Google');
+      } else if (error.code === 'auth/third-party-cookies-blocked') {
+        alert('Please enable third-party cookies or try in regular browsing mode');
+      }
       setLoading(false);
     }
   };
@@ -107,4 +112,4 @@ export default function Dashboard() {
       </div>
     </div>
   );
-} 
+}
