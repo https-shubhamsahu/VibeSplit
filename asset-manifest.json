@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/VibeSplit.git/static/css/main.f062e144.css",
+    "main.js": "/VibeSplit.git/static/js/main.fe603c87.js",
+    "index.html": "/VibeSplit.git/index.html",
+    "main.f062e144.css.map": "/VibeSplit.git/static/css/main.f062e144.css.map",
+    "main.fe603c87.js.map": "/VibeSplit.git/static/js/main.fe603c87.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.f062e144.css",
+    "static/js/main.fe603c87.js"
+  ]
+}
