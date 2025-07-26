@@ -59,13 +59,23 @@ body {
 }
 
 .home-heading {
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.home-heading h2 {
   font-family: 'Montserrat', sans-serif;
   font-weight: 700;
   font-size: 1.5rem;
-  text-align: center;
   color: #2d3748;
-  line-height: 1.4;
-  margin-bottom: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.home-heading h3 {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 600;
+  font-size: 1.2rem;
+  color: #4a5568;
 }
 
 /* Updated button styles with distinct colors */
@@ -536,6 +546,56 @@ body {
   background: #6a3fb5;
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(126, 87, 194, 0.2);
+}
+
+/* Update app title style with shine animation */
+.app-title {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 800;
+  font-size: 2.5rem;
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(135deg, #7e57c2 0%, #b39ddb 50%, #7e57c2 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: glitter 6s linear infinite;
+}
+
+.app-title::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.4),
+    transparent
+  );
+  animation: shine 3s ease-in-out infinite;
+  transform: skewX(-25deg);
+}
+
+@keyframes shine {
+  0% {
+    left: -100%;
+  }
+  20% {
+    left: 100%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+
+/* Keep existing glitter animation */
+@keyframes glitter {
+  0% { background-position: 0 0; }
+  50% { background-position: 400% 0; }
+  100% { background-position: 0 0; }
 }
 
 /* Mobile optimizations */

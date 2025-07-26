@@ -25,7 +25,11 @@ export default function Home() {
           alt="VibeSplit Logo" 
           className="app-logo"
         />
-        <h2 className="home-heading">Master your money—vibe with your crew, not your spends.</h2>
+        <div className="home-heading">
+          <h1 className="app-title">VibeSplit</h1>
+          <h4>Master your Money</h4>
+          <h4>Vibe with your crew, not your spends.</h4>
+        </div>
         <div className="button-group">
           <button className="main-btn" onClick={handleJoinSquad}>
             👥 Join the Squad
