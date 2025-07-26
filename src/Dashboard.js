@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { auth, googleProvider } from "./firebase";
-import { signInWithPopup, onAuthStateChanged, signOut } from "firebase/auth";
+import { signInWithPopup, onAuthStateChanged, signOut, browserPopupRedirectResolver } from "firebase/auth";
 
 const options = [
   {
@@ -48,13 +48,26 @@ export default function Dashboard() {
   const handleGoogleLogin = async () => {
     setLoading(true);
     try {
-      await signInWithPopup(auth, googleProvider);
+      await signInWithPopup(auth, googleProvider, browserPopupRedirectResolver);
     } catch (error) {
-      console.error("Sign-in error:", error);
-      if (error.code === 'auth/popup-blocked') {
-        alert('Please allow popups for this website to sign in with Google');
-      } else if (error.code === 'auth/third-party-cookies-blocked') {
-        alert('Please enable third-party cookies or try in regular browsing mode');
+      console.error("Login error:", error.code, error.message);
+      
+      // Handle specific error cases
+      switch (error.code) {
+        case 'auth/popup-blocked':
+          alert('Please allow popups for this website to sign in with Google');
+          break;
+        case 'auth/popup-closed-by-user':
+          // User closed the popup, no action needed
+          break;
+        case 'auth/cancelled-popup-request':
+          // Another popup is already open
+          break;
+        case 'auth/third-party-cookies-blocked':
+          alert('Please enable third-party cookies or try in regular browsing mode');
+          break;
+        default:
+          alert('Sign in failed. Please try again.');
       }
       setLoading(false);
     }
