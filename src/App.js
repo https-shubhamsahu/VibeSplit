@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import { HashRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import Home from "./Home";
 import Dashboard from "./Dashboard";
 import About from "./About";
@@ -12,13 +12,11 @@ import ThemeToggle from "./components/ThemeToggle";
 import "./styles.css";
 
 export default function App() {
-  // Get the base URL from package.json homepage
-  const baseUrl = process.env.PUBLIC_URL || "";
-
+  // HashRouter doesn't need basename with GitHub Pages
   return (
     <ThemeProvider>
       <ToastProvider>
-        <Router basename={baseUrl}>
+        <Router>
           <ThemeToggle />
           <Routes>
             <Route path="/" element={<Home />} />
@@ -27,6 +25,18 @@ export default function App() {
             <Route path="/trip/new" element={<TripForm />} />
             <Route path="/trip/:tripId" element={<TripScreen />} />
             <Route path="/join/:code" element={<JoinTrip />} />
+            
+            {/* Canteen Tracker Routes */}
+            <Route path="/canteen/new" element={<TripForm type="canteen" />} />
+            <Route path="/canteen/:tripId" element={<TripScreen type="canteen" />} />
+            
+            {/* Outing Split Routes */}
+            <Route path="/outing/new" element={<TripForm type="outing" />} />
+            <Route path="/outing/:tripId" element={<TripScreen type="outing" />} />
+            
+            {/* Project Pool Routes */}
+            <Route path="/project/new" element={<TripForm type="project" />} />
+            <Route path="/project/:tripId" element={<TripScreen type="project" />} />
             {/* Catch all route for 404 */}
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>

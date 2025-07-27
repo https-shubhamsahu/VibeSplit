@@ -21,7 +21,8 @@ export default function ShareTrip({ trip, isGuest }) {
   };
 
   const shareCode = trip.joinCode || generateJoinCode();
-  const shareUrl = `${window.location.origin}/join/${shareCode}`;
+  // Updated to work with HashRouter - using just origin for GitHub Pages
+  const shareUrl = `${window.location.origin}/VibeSplit/#/join/${shareCode}`;
 
   const copyToClipboard = (text, type) => {
     navigator.clipboard.writeText(text);

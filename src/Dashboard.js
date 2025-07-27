@@ -111,12 +111,18 @@ export default function Dashboard() {
             className="option-card"
             key={opt.title}
             onClick={() => {
+              // All cards are now clickable and navigate to appropriate routes
               if (opt.title === "Plan a Trip") {
                 navigate("/trip/new", { state: { mode: isGuest ? "guest" : "auth" } });
+              } else if (opt.title === "Canteen Tracker") {
+                navigate("/canteen/new", { state: { mode: isGuest ? "guest" : "auth" } });
+              } else if (opt.title === "Outing Split") {
+                navigate("/outing/new", { state: { mode: isGuest ? "guest" : "auth" } });
+              } else if (opt.title === "Project Pool") {
+                navigate("/project/new", { state: { mode: isGuest ? "guest" : "auth" } });
               }
-              // You can add navigation for other cards here later
             }}
-            style={opt.title === "Plan a Trip" ? { cursor: "pointer" } : {}}
+            style={{ cursor: "pointer" }}
           >
             <div className="option-emoji">{opt.emoji}</div>
             <div className="option-title">{opt.title}</div>

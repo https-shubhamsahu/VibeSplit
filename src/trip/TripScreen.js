@@ -10,25 +10,57 @@ import BalanceSheet from "./BalanceSheet";
 import ShareTrip from "./ShareTrip";
 import LoadingSpinner from "../components/LoadingSpinner";
 
-export default function TripScreen() {
+export default function TripScreen({ type = "trip" }) {
   const { tripId } = useParams();
   const location = useLocation();
   const isGuest = location.state?.mode === "guest";
   const [trip, setTrip] = useState(null);
   const [loading, setLoading] = useState(true);
+  
+  // Get title and labels based on type
+  const getTypeInfo = () => {
+    switch(type) {
+      case "canteen":
+        return {
+          title: "Canteen Tracker",
+          memberLabel: "Add Person",
+          expenseLabel: "Add Food Item"
+        };
+      case "outing":
+        return {
+          title: "Outing Split",
+          memberLabel: "Add Friend",
+          expenseLabel: "Add Expense"
+        };
+      case "project":
+        return {
+          title: "Project Pool",
+          memberLabel: "Add Team Member",
+          expenseLabel: "Add Purchase"
+        };
+      default:
+        return {
+          title: "Trip",
+          memberLabel: "Add Member",
+          expenseLabel: "Add Expense"
+        };
+    }
+  };
+  
+  const typeInfo = getTypeInfo();
 
   useEffect(() => {
     const loadTrip = () => {
       if (isGuest) {
         // Load from localStorage
-        const trips = JSON.parse(localStorage.getItem("trips") || "[]");
-        const currentTrip = trips.find((t) => t.id === tripId);
-        setTrip(currentTrip);
+        const items = JSON.parse(localStorage.getItem(type + "s") || "[]");
+        const currentItem = items.find((t) => t.id === tripId);
+        setTrip(currentItem);
         setLoading(false);
       } else {
         // Load from Firestore
         const unsubscribe = onSnapshot(
-          doc(db, "trips", tripId),
+          doc(db, type + "s", tripId),
           (doc) => {
             if (doc.exists()) {
               setTrip({ id: doc.id, ...doc.data() });
@@ -41,10 +73,10 @@ export default function TripScreen() {
     };
 
     loadTrip();
-  }, [tripId, isGuest]);
+  }, [tripId, isGuest, type]);
 
   if (loading) return <LoadingSpinner />;
-  if (!trip) return <div>Trip not found!</div>;
+  if (!trip) return <div>{typeInfo.title} not found!</div>;
 
   return (
     <div className="trip-screen">
@@ -52,16 +84,23 @@ export default function TripScreen() {
         <h1>
           {trip.emoji} {trip.name}
         </h1>
+        <div className="type-badge">{typeInfo.title}</div>
       </header>
 
       <div className="trip-content">
         <div className="left-panel">
-          <ShareTrip trip={trip} isGuest={isGuest} />
-          <AddMember tripId={tripId} isGuest={isGuest} />
-          <MemberList members={trip.members} />
+          <ShareTrip trip={trip} isGuest={isGuest} type={type} />
+          <AddMember 
+            tripId={tripId} 
+            isGuest={isGuest} 
+            type={type} 
+            label={typeInfo.memberLabel} 
+          />
+          <MemberList members={trip.members} type={type} />
           <BalanceSheet
             expenses={trip.expenses}
             members={trip.members}
+            type={type}
           />
         </div>
 
@@ -69,10 +108,13 @@ export default function TripScreen() {
           <ExpenseForm
             trip={trip}
             isGuest={isGuest}
+            type={type}
+            label={typeInfo.expenseLabel}
           />
           <ExpenseList
             expenses={trip.expenses}
             members={trip.members}
+            type={type}
           />
         </div>
       </div>
