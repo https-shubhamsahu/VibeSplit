@@ -46,7 +46,7 @@ const AboutPage = () => (
     {/* Help button (links to README on GitHub) */}
     <a
       className="help-btn"
-      href="https://github.com/shubhamsahu/VibeSplit/blob/main/README.md"
+      href="https://github.com/https-shubhamsahu/VibeSplit?tab=readme-ov-file#readme-ov-file"
       target="_blank"
       rel="noopener noreferrer"
     >
