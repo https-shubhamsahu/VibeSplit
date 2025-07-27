@@ -1,14 +1,14 @@
 {
   "files": {
     "main.css": "/VibeSplit/static/css/main.ff64c4d8.css",
-    "main.js": "/VibeSplit/static/js/main.8e77ea81.js",
+    "main.js": "/VibeSplit/static/js/main.ad991867.js",
     "static/media/mylogo.png": "/VibeSplit/static/media/mylogo.5f6c89d1f595a5074904.png",
     "index.html": "/VibeSplit/index.html",
     "main.ff64c4d8.css.map": "/VibeSplit/static/css/main.ff64c4d8.css.map",
-    "main.8e77ea81.js.map": "/VibeSplit/static/js/main.8e77ea81.js.map"
+    "main.ad991867.js.map": "/VibeSplit/static/js/main.ad991867.js.map"
   },
   "entrypoints": [
     "static/css/main.ff64c4d8.css",
-    "static/js/main.8e77ea81.js"
+    "static/js/main.ad991867.js"
   ]
 }
