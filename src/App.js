@@ -46,14 +46,9 @@ export default function App() {
               <Route path="*" element={<Navigate to="/" />} />
               {/* Canteen Tracker Routes */}
               <Route path="/canteen/new" element={<TripForm type="canteen" />} />
-              <Route path="/canteen/:tripId" element={<TripScreen type="canteen" />} />
-              {/* Outing Split Routes */}
+              <Route path="/canteen/new" element={<TripForm type="canteen" />} />
               <Route path="/outing/new" element={<TripForm type="outing" />} />
-              <Route path="/outing/:tripId" element={<TripScreen type="outing" />} />
-              
-              {/* Project Pool Routes */}
               <Route path="/project/new" element={<TripForm type="project" />} />
-              <Route path="/project/:tripId" element={<TripScreen type="project" />} />
               {/* Catch all route for 404 */}
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>

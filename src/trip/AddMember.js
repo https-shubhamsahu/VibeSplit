@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { db } from "../firebase";
-import { doc, updateDoc, arrayUnion, getDoc } from "firebase/firestore";
+import { doc, updateDoc, arrayUnion } from "firebase/firestore";
 import { useToast } from "../contexts/ToastContext";
 
 const AVATAR_EMOJIS = ["👤", "👩", "👨", "🧑", "👱"];
@@ -45,7 +45,7 @@ export default function AddMember({ tripId, isGuest, type = "trip", label = "Add
           members: arrayUnion(newMember)
         });
         // Fetch the updated trip doc and update memberCount in trip_history
-        import('../../services/tripHistoryService').then(async ({ default: tripHistoryService }) => {
+        import('../services/tripHistoryService').then(async ({ default: tripHistoryService }) => {
           const { getDoc, doc: firestoreDoc } = await import('firebase/firestore');
           const tripDoc = await getDoc(firestoreDoc(db, type + "s", tripId));
           const data = tripDoc.data();

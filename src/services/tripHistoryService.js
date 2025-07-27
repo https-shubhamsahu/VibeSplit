@@ -39,7 +39,7 @@ class TripHistoryService {
       tripName: tripData.title || tripData.name,
       category: category,
       createdAt: tripData.createdAt || new Date().toISOString(),
-      createdBy: isGuest ? 'guest' : authService.getCurrentUser()?.uid,
+      createdBy: tripData.createdBy || (isGuest ? 'guest' : authService.getCurrentUser()?.uid),
       memberCount: tripData.members?.length || 0,
       isGuest: isGuest
     };
@@ -49,7 +49,7 @@ class TripHistoryService {
         // Save to Firebase for authenticated users
         await addDoc(collection(db, 'trip_history'), {
           ...historyEntry,
-          userId: authService.getCurrentUser().uid,
+          userId: historyEntry.createdBy,
           timestamp: serverTimestamp()
         });
       }

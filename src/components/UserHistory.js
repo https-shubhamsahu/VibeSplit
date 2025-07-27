@@ -1,55 +1,38 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import historyService from '../services/historyService';
 import tripHistoryService from '../services/tripHistoryService';
 import authService from '../services/authService';
 import analyticsService from '../services/analyticsService';
+import './UserHistory.css';
 
 const UserHistory = ({ isGuest = false }) => {
   const [history, setHistory] = useState([]);
-  const [statistics, setStatistics] = useState(null);
+  const [statistics, setStatistics] = useState({ totalTrips: 0, totalExpenses: 0, totalAmount: 0, avgGroupSize: 0 });
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('recent');
-  const [error, setError] = useState(null);
+
   const navigate = useNavigate();
 
   useEffect(() => {
     const loadHistory = async () => {
       setLoading(true);
       try {
-        const user = authService.getCurrentUser();
-        const userId = user?.uid;
-        
         let history = [];
         
-        if (userId) {
-          // Get authenticated user history from historyService (includes trip_history collection)
-          history = await historyService.getUserHistory(userId);
-        } else {
+        if (isGuest) {
           // Get guest history from localStorage
           history = historyService.getGuestHistory();
+        } else {
+          // Get authenticated user history from historyService
+          const user = authService.getCurrentUser();
+          const userId = user?.uid;
+          if (userId) {
+            history = await historyService.getUserHistory(userId);
+          }
         }
         
-        // Also get trip history from tripHistoryService as backup
-        try {
-          const tripHistory = await tripHistoryService.getUserHistory(userId);
-          
-          // Combine and deduplicate by ID
-          const combinedHistory = [...history];
-          tripHistory.forEach(trip => {
-            if (!combinedHistory.find(h => h.id === trip.id)) {
-              combinedHistory.push({
-                ...trip,
-                category: trip.category || trip.type,
-                title: trip.title || trip.tripName
-              });
-            }
-          });
-          
-          history = combinedHistory;
-        } catch (error) {
-          console.warn('Error loading trip history service:', error);
-        }
+        // History is already loaded from historyService
         
         // Sort by creation date (most recent first)
         history.sort((a, b) => {
@@ -58,19 +41,32 @@ const UserHistory = ({ isGuest = false }) => {
           return bDate - aDate;
         });
         
+        console.log('DEBUG UserHistory lastActivity:', history.map(h => ({ id: h.id, title: h.title, lastActivity: h.lastActivity, createdAt: h.createdAt })));
         setHistory(history);
         
         // Get statistics
         try {
-          const stats = await historyService.getUserStats(userId);
-          setStatistics(stats);
+          if (isGuest) {
+            // For guests, calculate stats from local history
+            const totalExpenses = history.reduce((sum, item) => sum + (item.totalExpenses || 0), 0);
+            const totalAmount = history.reduce((sum, item) => sum + (item.totalAmount || 0), 0);
+            const avgGroupSize = history.length > 0 ? Math.round(history.reduce((sum, item) => sum + (Array.isArray(item.members) ? item.members.length : 0), 0) / history.length) : 0;
+            setStatistics({ totalTrips: history.length, totalExpenses, totalAmount, averageGroupSize: avgGroupSize });
+          } else {
+            const user = authService.getCurrentUser();
+            const userId = user?.uid;
+            if (userId) {
+              const stats = await historyService.getUserStats(userId);
+              setStatistics(stats);
+            }
+          }
         } catch (error) {
           console.warn('Error loading stats:', error);
           setStatistics({ totalTrips: history.length, totalExpenses: 0, totalAmount: 0 });
         }
       } catch (error) {
         console.error('Error loading history:', error);
-        setError('Failed to load history');
+
       } finally {
         setLoading(false);
       }
@@ -111,7 +107,9 @@ const UserHistory = ({ isGuest = false }) => {
   };
 
   const formatDate = (dateString) => {
+    if (!dateString) return '-';
     const date = new Date(dateString);
+    if (isNaN(date.getTime())) return '-';
     const now = new Date();
     // Compare local date parts
     const dateYMD = [date.getFullYear(), date.getMonth(), date.getDate()];
@@ -237,22 +235,22 @@ const UserHistory = ({ isGuest = false }) => {
           <div className="stats-grid">
             <div className="stat-card">
               <div className="stat-icon">🧳</div>
-              <div className="stat-value">{statistics.totalTrips}</div>
+              <div className="stat-value">{typeof statistics.totalTrips === 'number' ? statistics.totalTrips : 0}</div>
               <div className="stat-label">Total Trips</div>
             </div>
             <div className="stat-card">
               <div className="stat-icon">💰</div>
-              <div className="stat-value">{statistics.totalExpenses}</div>
+              <div className="stat-value">{typeof statistics.totalExpenses === 'number' ? statistics.totalExpenses : 0}</div>
               <div className="stat-label">Total Expenses</div>
             </div>
             <div className="stat-card">
               <div className="stat-icon">💸</div>
-              <div className="stat-value">{formatCurrency(statistics.totalAmount)}</div>
+              <div className="stat-value">{formatCurrency(typeof statistics.totalAmount === 'number' ? statistics.totalAmount : 0)}</div>
               <div className="stat-label">Total Amount</div>
             </div>
             <div className="stat-card">
               <div className="stat-icon">👥</div>
-              <div className="stat-value">{statistics.averageGroupSize}</div>
+              <div className="stat-value">{typeof statistics.averageGroupSize === 'number' ? statistics.averageGroupSize : 0}</div>
               <div className="stat-label">Avg Group Size</div>
             </div>
           </div>

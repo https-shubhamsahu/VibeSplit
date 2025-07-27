@@ -1,5 +1,5 @@
 import { db } from '../firebase';
-import { collection, query, where, orderBy, limit, getDocs } from 'firebase/firestore';
+import { collection, query, where, limit, getDocs } from 'firebase/firestore';
 
 class HistoryService {
   constructor() {
@@ -22,22 +22,18 @@ class HistoryService {
     try {
       const history = [];
       
-      // First, get trip history from the new trip_history collection
+      // First, get trip history from the trip_history collection (with user filtering)
       try {
         const tripHistoryRef = collection(db, 'trip_history');
-        console.log('DEBUG: Fetching trip history for userId:', userId);
-        // TEMP: Remove userId filter to debug
         const tripHistoryQuery = query(
           tripHistoryRef,
-          orderBy('createdAt', 'desc'),
+          where('createdBy', '==', userId),
           limit(maxItems)
         );
         
         const tripHistorySnapshot = await getDocs(tripHistoryQuery);
-        console.log('DEBUG: tripHistorySnapshot.size:', tripHistorySnapshot.size);
         tripHistorySnapshot.forEach((doc) => {
           const data = doc.data();
-          console.log('DEBUG: trip_history doc:', data);
           history.push({
             id: data.tripId,
             type: data.category,
@@ -62,33 +58,96 @@ class HistoryService {
       for (const type of types) {
         try {
           const itemsRef = collection(db, type);
-          const q = query(
+          
+          // Process trips created by the user
+          const processSnapshot = (snapshot) => {
+            snapshot.forEach((doc) => {
+              const data = doc.data();
+              const existingIndex = history.findIndex(item => item.id === doc.id);
+              
+              if (existingIndex >= 0) {
+                // Update existing entry with more details
+                history[existingIndex] = {
+                  ...history[existingIndex],
+                  members: data.members || [],
+                  totalExpenses: data.expenses?.length || 0,
+                  totalAmount: this.calculateTotalAmount(data.expenses || []),
+                  lastActivity: (() => {
+  if (data.lastActivity && !isNaN(new Date(data.lastActivity))) return data.lastActivity;
+  if (Array.isArray(data.expenses) && data.expenses.length > 0) {
+    // Find the latest valid expense date
+    const validDates = data.expenses
+      .map(e => e.date)
+      .filter(d => d && !isNaN(new Date(d)))
+      .sort((a, b) => new Date(b) - new Date(a));
+    if (validDates.length > 0) return validDates[0];
+  }
+  return data.createdAt;
+})(),
+                  status: this.getItemStatus(data)
+                };
+              } else {
+                // Add new entry
+                history.push({
+                  id: doc.id,
+                  type: type.slice(0, -1), // Remove 's' from end
+                  category: type.slice(0, -1),
+                  title: data.title || data.name,
+                  createdAt: data.createdAt,
+                  members: data.members || [],
+                  memberCount: data.members?.length || 0,
+                  totalExpenses: data.expenses?.length || 0,
+                  totalAmount: this.calculateTotalAmount(data.expenses || []),
+                  lastActivity: (() => {
+  if (data.lastActivity && !isNaN(new Date(data.lastActivity))) return data.lastActivity;
+  if (Array.isArray(data.expenses) && data.expenses.length > 0) {
+    // Find the latest valid expense date
+    const validDates = data.expenses
+      .map(e => e.date)
+      .filter(d => d && !isNaN(new Date(d)))
+      .sort((a, b) => new Date(b) - new Date(a));
+    if (validDates.length > 0) return validDates[0];
+  }
+  return data.createdAt;
+})(),
+                  status: this.getItemStatus(data)
+                });
+              }
+            });
+          };
+          
+          // Get trips created by the user
+          const createdByUserQuery = query(
             itemsRef,
             where('createdBy', '==', userId),
-            orderBy('createdAt', 'desc'),
             limit(maxItems)
           );
-
-          const querySnapshot = await getDocs(q);
-          querySnapshot.forEach((doc) => {
+          
+          const createdByUserSnapshot = await getDocs(createdByUserQuery);
+          processSnapshot(createdByUserSnapshot);
+          
+          // Get trips where user is a member (fallback method)
+          const allTripsQuery = query(
+            itemsRef,
+            limit(100) // Reasonable limit for manual filtering
+          );
+          
+          const allTripsSnapshot = await getDocs(allTripsQuery);
+          allTripsSnapshot.forEach((doc) => {
             const data = doc.data();
-            const existingIndex = history.findIndex(item => item.id === doc.id);
+            // Check if user is a member and not already added as creator
+            const isMember = data.members?.some(member => 
+              (member.id && member.id === userId) ||
+              (member.email && member.email === userId) ||
+              (typeof member === 'string' && member === userId)
+            );
             
-            if (existingIndex >= 0) {
-              // Update existing entry with more details
-              history[existingIndex] = {
-                ...history[existingIndex],
-                members: data.members || [],
-                totalExpenses: data.expenses?.length || 0,
-                totalAmount: this.calculateTotalAmount(data.expenses || []),
-                lastActivity: data.lastActivity || data.createdAt,
-                status: this.getItemStatus(data)
-              };
-            } else {
-              // Add new entry if not found in trip_history
+            const alreadyExists = history.some(item => item.id === doc.id);
+            
+            if (isMember && !alreadyExists) {
               history.push({
                 id: doc.id,
-                type: type.slice(0, -1), // Remove 's' from end
+                type: type.slice(0, -1),
                 category: type.slice(0, -1),
                 title: data.title || data.name,
                 createdAt: data.createdAt,
@@ -96,7 +155,18 @@ class HistoryService {
                 memberCount: data.members?.length || 0,
                 totalExpenses: data.expenses?.length || 0,
                 totalAmount: this.calculateTotalAmount(data.expenses || []),
-                lastActivity: data.lastActivity || data.createdAt,
+                lastActivity: (() => {
+  if (data.lastActivity && !isNaN(new Date(data.lastActivity))) return data.lastActivity;
+  if (Array.isArray(data.expenses) && data.expenses.length > 0) {
+    // Find the latest valid expense date
+    const validDates = data.expenses
+      .map(e => e.date)
+      .filter(d => d && !isNaN(new Date(d)))
+      .sort((a, b) => new Date(b) - new Date(a));
+    if (validDates.length > 0) return validDates[0];
+  }
+  return data.createdAt;
+})(),
                 status: this.getItemStatus(data)
               });
             }
@@ -134,6 +204,18 @@ class HistoryService {
       const types = ['trips', 'canteens', 'outings', 'projects'];
       const history = [];
 
+      // Helper to get the last activity date
+      function getLastActivity(item) {
+        // Use lastActivity if valid
+        if (item.lastActivity && !isNaN(new Date(item.lastActivity))) return item.lastActivity;
+        // Fallback: use last expense date if exists
+        if (Array.isArray(item.expenses) && item.expenses.length > 0) {
+          const lastExp = item.expenses[item.expenses.length - 1];
+          if (lastExp.date && !isNaN(new Date(lastExp.date))) return lastExp.date;
+        }
+        // Otherwise, use createdAt
+        return item.createdAt;
+      }
       types.forEach(type => {
         const items = JSON.parse(localStorage.getItem(type) || '[]');
         items.forEach(item => {
@@ -145,7 +227,7 @@ class HistoryService {
             members: item.members || [],
             totalExpenses: item.expenses?.length || 0,
             totalAmount: this.calculateTotalAmount(item.expenses || []),
-            lastActivity: item.lastActivity || item.createdAt,
+            lastActivity: getLastActivity(item),
             status: this.getItemStatus(item),
             isGuest: true
           });
@@ -177,6 +259,43 @@ class HistoryService {
     if (daysSinceActivity <= 7) return 'recent';
     if (daysSinceActivity <= 30) return 'inactive';
     return 'archived';
+  }
+
+  // Clear cache for a specific user (call this when new trips are created)
+  clearUserCache(userId) {
+    if (userId) {
+      const cacheKey = `history_${userId}`;
+      this.cache.delete(cacheKey);
+    }
+  }
+
+  // Clear all cache
+  clearAllCache() {
+    this.cache.clear();
+  }
+
+  // Get user statistics
+  async getUserStats(userId) {
+    try {
+      const history = await this.getUserHistory(userId);
+      const totalTrips = history.length;
+      const totalExpenses = history.reduce((sum, trip) => sum + (trip.totalExpenses || 0), 0);
+      const totalAmount = history.reduce((sum, trip) => sum + (trip.totalAmount || 0), 0);
+      
+      // Calculate average group size
+      const totalMembers = history.reduce((sum, trip) => sum + (Array.isArray(trip.members) ? trip.members.length : 0), 0);
+      const averageGroupSize = totalTrips > 0 ? Math.round(totalMembers / totalTrips) : 0;
+
+      return {
+        totalTrips,
+        totalExpenses,
+        totalAmount,
+        averageGroupSize
+      };
+    } catch (error) {
+      console.error('Error calculating user stats:', error);
+      return { totalTrips: 0, totalExpenses: 0, totalAmount: 0, averageGroupSize: 0 };
+    }
   }
 
   async getRecentActivities(userId, limit = 10) {

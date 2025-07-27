@@ -80,10 +80,10 @@ export default function Dashboard() {
     analyticsService.trackUserAction('select_option', { option: option.title });
     
     const routes = {
-      "Plan a Trip": "/trip/new",
-      "Canteen Tracker": "/canteen/new",
-      "Outing Split": "/outing/new",
-      "Project Pool": "/project/new"
+      "Plan a Trip": "/create/trip",
+      "Canteen Tracker": "/create/canteen",
+      "Outing Split": "/create/outing",
+      "Project Pool": "/create/project"
     };
     
     const route = routes[option.title];
@@ -118,7 +118,17 @@ export default function Dashboard() {
     <div className="dashboard">
       {isGuest && (
         <div className="guest-banner">
-          Your data is only saved on this device. Sign up to keep it across devices.
+          <div className="guest-message">
+            Your data is only saved on this device. Sign up to keep it across devices.
+          </div>
+          <div className="guest-actions">
+            <button 
+              className="history-btn" 
+              onClick={() => setShowHistory(!showHistory)}
+            >
+              {showHistory ? '📊 Dashboard' : '📋 History'}
+            </button>
+          </div>
         </div>
       )}
       {isAuthMode && user && (

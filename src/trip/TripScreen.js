@@ -10,7 +10,9 @@ import BalanceSheet from "./BalanceSheet";
 import ShareTrip from "./ShareTrip";
 import LoadingSpinner from "../components/LoadingSpinner";
 
-export default function TripScreen({ type = "trip" }) {
+export default function TripScreen({ type }) {
+  const params = useParams();
+  const screenType = type || params.type || "trip";
   const { tripId } = useParams();
   const location = useLocation();
   const isGuest = location.state?.mode === "guest";
@@ -20,7 +22,7 @@ export default function TripScreen({ type = "trip" }) {
   
   // Get title and labels based on type
   const getTypeInfo = () => {
-    switch(type) {
+    switch(screenType) {
       case "canteen":
         return {
           title: "Canteen Tracker",
@@ -50,31 +52,30 @@ export default function TripScreen({ type = "trip" }) {
   
   const typeInfo = getTypeInfo();
 
+
   useEffect(() => {
     const loadTrip = () => {
       if (isGuest) {
         // Load from localStorage
-        const items = JSON.parse(localStorage.getItem(type + "s") || "[]");
+        const items = JSON.parse(localStorage.getItem(screenType + "s") || "[]");
         const currentItem = items.find((t) => t.id === tripId);
         setTrip(currentItem);
         setLoading(false);
       } else {
         // Load from Firestore
-        const unsubscribe = onSnapshot(
-          doc(db, type + "s", tripId),
-          (doc) => {
-            if (doc.exists()) {
-              setTrip({ id: doc.id, ...doc.data() });
+        const unsub = onSnapshot(doc(db, screenType + "s", tripId), (docSnap) => {
+            if (docSnap.exists()) {
+              setTrip({ id: docSnap.id, ...docSnap.data() });
             }
             setLoading(false);
           }
         );
-        return () => unsubscribe();
+        return () => unsub();
       }
     };
 
     loadTrip();
-  }, [tripId, isGuest, type, refreshKey]);
+  }, [tripId, isGuest, screenType, refreshKey]);
 
   if (loading) return <LoadingSpinner />;
   if (!trip) return <div>{typeInfo.title} not found!</div>;
@@ -90,19 +91,19 @@ export default function TripScreen({ type = "trip" }) {
 
       <div className="trip-content">
         <div className="left-panel">
-          <ShareTrip trip={trip} isGuest={isGuest} type={type} />
+          <ShareTrip trip={trip} isGuest={isGuest} type={screenType} />
           <AddMember 
             tripId={tripId} 
             isGuest={isGuest} 
-            type={type} 
+            type={screenType} 
             label={typeInfo.memberLabel} 
             onMemberAdded={() => setRefreshKey(prev => prev + 1)}
           />
-          <MemberList members={trip.members} type={type} />
+          <MemberList members={trip.members} type={screenType} />
           <BalanceSheet
             expenses={trip.expenses}
             members={trip.members}
-            type={type}
+            type={screenType}
           />
         </div>
 
@@ -110,14 +111,14 @@ export default function TripScreen({ type = "trip" }) {
           <ExpenseForm
             trip={trip}
             isGuest={isGuest}
-            type={type}
+            type={screenType}
             label={typeInfo.expenseLabel}
             onExpenseAdd={() => setRefreshKey(prev => prev + 1)}
           />
           <ExpenseList
             expenses={trip.expenses}
             members={trip.members}
-            type={type}
+            type={screenType}
           />
         </div>
       </div>
