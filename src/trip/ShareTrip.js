@@ -26,7 +26,9 @@ export default function ShareTrip({ trip, isGuest, type = "trip" }) {
     generateAndSetJoinCode();
   }, [trip.joinCode, isGuest, trip.id, type]);
 
-  const shareUrl = shareCode ? `${window.location.origin}${window.location.pathname}#/join/${shareCode}` : "";
+  // Use the homepage base from package.json for correct GitHub Pages links
+const homepage = "https://https-shubhamsahu.github.io/VibeSplit";
+const shareUrl = shareCode ? `${homepage}/#/join/${type}/${shareCode}` : "";
 
   const copyToClipboard = (text, type) => {
     navigator.clipboard.writeText(text);
@@ -37,35 +39,47 @@ export default function ShareTrip({ trip, isGuest, type = "trip" }) {
 
   return (
     <div className="share-trip-section">
-      <h3>Share Trip</h3>
+      <h3>Share This {trip.emoji ? `${trip.emoji} ` : ''}{trip.name || 'Trip'}</h3>
       {isGuest ? (
         <p className="share-notice" onClick={() => showInfo("Please log in to share this trip with others.")}>Sharing is only available for logged-in users</p>
       ) : (
         <div className="share-content">
+          <p style={{marginBottom: 8}}>Anyone with this code or link can join your group:</p>
           <div className="share-code-box">
             <span>Join Code:</span>
-            <code>{shareCode}</code>
+            <input
+              type="text"
+              value={shareCode || ''}
+              readOnly
+              className="share-code-input"
+              onClick={e => { e.target.select(); copyToClipboard(shareCode, 'code'); }}
+              style={{width: 110, fontWeight: 'bold', fontSize: '1.2em', textAlign: 'center', marginRight: 8}}
+            />
             <button 
               onClick={() => copyToClipboard(shareCode, 'code')}
               className="copy-btn"
             >
-              {copied ? '✓ Copied!' : 'Copy'}
+              {copied ? '✓' : 'Copy'}
             </button>
           </div>
-          
+          <hr style={{margin: '18px 0', border: 'none', borderTop: '1px solid #eee'}} />
           <div className="share-link-box">
             <input 
               type="text" 
               value={shareUrl} 
               readOnly 
+              className="share-link-input"
+              onClick={e => { e.target.select(); copyToClipboard(shareUrl, 'link'); }}
+              style={{flex: 1, marginRight: 8}}
             />
             <button 
               onClick={() => copyToClipboard(shareUrl, 'link')}
               className="copy-btn"
             >
-              {copied ? '✓ Copied!' : 'Copy Link'}
+              {copied ? '✓' : 'Copy Link'}
             </button>
           </div>
+          <p style={{fontSize: '0.95em', color: '#888', marginTop: 8}}>Anyone with this link can join!</p>
         </div>
       )}
     </div>

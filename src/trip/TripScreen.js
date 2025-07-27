@@ -78,7 +78,7 @@ export default function TripScreen({ type }) {
   }, [tripId, isGuest, screenType, refreshKey]);
 
   if (loading) return <LoadingSpinner />;
-  if (!trip) return <div>{typeInfo.title} not found!</div>;
+  if (!trip) return <div>Page not found!</div>;
 
   return (
     <div className="trip-screen">

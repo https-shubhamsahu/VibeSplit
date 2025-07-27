@@ -100,6 +100,8 @@ export default function TripForm({ type }) {
         expenses: [],
       };
       // Save under the appropriate type in localStorage
+      const joinCode = Math.random().toString(36).substring(2, 8).toUpperCase();
+      item.joinCode = joinCode;
       const items = JSON.parse(localStorage.getItem(formType + "s") || "[]");
       items.push(item);
       localStorage.setItem(formType + "s", JSON.stringify(items));
@@ -110,6 +112,9 @@ export default function TripForm({ type }) {
       // Save to Firestore
       try {
         const user = auth.currentUser;
+        // Generate join code
+        const joinCode = Math.random().toString(36).substring(2, 8).toUpperCase();
+        // Create trip in Firestore with joinCode
         const docRef = await addDoc(collection(db, formType + "s"), {
           title: name, // Use 'title' for consistency with history service
           name,
@@ -119,9 +124,9 @@ export default function TripForm({ type }) {
           createdAt: serverTimestamp(),
           members: [],
           expenses: [],
+          joinCode
         });
         itemId = docRef.id;
-        
         // Save to trip history
         const tripData = {
           id: itemId,
@@ -133,6 +138,7 @@ export default function TripForm({ type }) {
           createdAt: new Date().toISOString(),
           members: [],
           expenses: [],
+          joinCode
         };
         await tripHistoryService.saveTripToHistory(tripData, formType, false);
       } catch (error) {
