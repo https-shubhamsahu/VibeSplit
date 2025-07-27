@@ -3,6 +3,8 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { db, auth } from "../firebase";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { useToast } from "../contexts/ToastContext";
+import tripHistoryService from "../services/tripHistoryService";
+import analyticsService from "../services/analyticsService";
 
 // Different emoji options based on type
 const emojiOptions = {
@@ -81,6 +83,7 @@ export default function TripForm({ type = "trip" }) {
       itemId = generateLocalId();
       const item = {
         id: itemId,
+        title: name, // Use 'title' for consistency with history service
         name,
         emoji,
         type, // Store the type
@@ -93,11 +96,15 @@ export default function TripForm({ type = "trip" }) {
       const items = JSON.parse(localStorage.getItem(type + "s") || "[]");
       items.push(item);
       localStorage.setItem(type + "s", JSON.stringify(items));
+      
+      // Save to trip history
+      await tripHistoryService.saveTripToHistory(item, type, true);
     } else {
       // Save to Firestore
       try {
         const user = auth.currentUser;
         const docRef = await addDoc(collection(db, type + "s"), {
+          title: name, // Use 'title' for consistency with history service
           name,
           emoji,
           type, // Store the type
@@ -107,6 +114,20 @@ export default function TripForm({ type = "trip" }) {
           expenses: [],
         });
         itemId = docRef.id;
+        
+        // Save to trip history
+        const tripData = {
+          id: itemId,
+          title: name,
+          name,
+          emoji,
+          type,
+          createdBy: user ? user.uid : "unknown",
+          createdAt: new Date().toISOString(),
+          members: [],
+          expenses: [],
+        };
+        await tripHistoryService.saveTripToHistory(tripData, type, false);
       } catch (error) {
         console.error(`Error creating ${type}:`, error);
         setError(`Error creating ${type}. Please try again.`);
@@ -117,6 +138,10 @@ export default function TripForm({ type = "trip" }) {
     }
 
     setLoading(false);
+    
+    // Track analytics
+    analyticsService.trackTripAction('create_trip', type, itemId);
+    
     showSuccess(`${typeInfo.title.replace('Create ', '')} "${name}" created successfully!`);
     navigate(`/${type}/${itemId}`, { state: { mode: isGuest ? "guest" : "auth" } });
   };

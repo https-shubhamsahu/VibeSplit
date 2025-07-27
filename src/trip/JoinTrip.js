@@ -5,7 +5,7 @@ import { collection, query, where, getDocs, updateDoc, doc, arrayUnion } from "f
 import { useToast } from "../contexts/ToastContext";
 
 export default function JoinTrip() {
-  const { code } = useParams();
+  const { type = "trip", code } = useParams();
   const navigate = useNavigate();
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
@@ -14,9 +14,9 @@ export default function JoinTrip() {
   useEffect(() => {
     const findAndJoinTrip = async () => {
       try {
-        // Query Firestore for trip with matching join code
-        const tripsRef = collection(db, "trips");
-        const q = query(tripsRef, where("joinCode", "==", code));
+        // Query Firestore for item with matching join code
+        const itemsRef = collection(db, type + "s");
+        const q = query(itemsRef, where("joinCode", "==", code));
         const querySnapshot = await getDocs(q);
 
         if (querySnapshot.empty) {
@@ -26,17 +26,17 @@ export default function JoinTrip() {
           return;
         }
 
-        // Get the first matching trip
-        const tripDoc = querySnapshot.docs[0];
-        const tripId = tripDoc.id;
-        const tripData = tripDoc.data();
+        // Get the first matching item
+        const itemDoc = querySnapshot.docs[0];
+        const itemId = itemDoc.id;
+        const itemData = itemDoc.data();
 
         // Check if user is authenticated
         const user = auth.currentUser;
         
         if (user) {
-          // Add authenticated user to trip members
-          await updateDoc(doc(db, "trips", tripId), {
+          // Add authenticated user to item members
+          await updateDoc(doc(db, type + "s", itemId), {
             members: arrayUnion({
               id: user.uid,
               name: user.displayName || user.email,
@@ -46,19 +46,19 @@ export default function JoinTrip() {
               joinedAt: new Date().toISOString()
             })
           });
-          showSuccess("You've successfully joined the trip!");
-          navigate(`/trip/${tripId}`, { state: { mode: "auth" } });
+          showSuccess(`You've successfully joined the ${type}!`);
+          navigate(`/${type}/${itemId}`, { state: { mode: "auth" } });
         } else {
           // Handle guest join
           const guestId = `guest-${Date.now()}`;
-          const trips = JSON.parse(localStorage.getItem("trips") || "[]");
+          const items = JSON.parse(localStorage.getItem(type + "s") || "[]");
           
-          // Add trip to localStorage for guest access
-          trips.push({
-            ...tripData,
-            id: tripId,
+          // Add item to localStorage for guest access
+          items.push({
+            ...itemData,
+            id: itemId,
             members: [
-              ...tripData.members,
+              ...itemData.members,
               {
                 id: guestId,
                 name: "Guest User",
@@ -69,14 +69,14 @@ export default function JoinTrip() {
             ]
           });
           
-          localStorage.setItem("trips", JSON.stringify(trips));
-          showSuccess("You've joined the trip as a guest!");
-          navigate(`/trip/${tripId}`, { state: { mode: "guest" } });
+          localStorage.setItem(type + "s", JSON.stringify(items));
+          showSuccess(`You've joined the ${type} as a guest!`);
+          navigate(`/${type}/${itemId}`, { state: { mode: "guest" } });
         }
 
       } catch (err) {
-        console.error("Error joining trip:", err);
-        setError("Failed to join trip. Please try again.");
+        console.error(`Error joining ${type}:`, err);
+        setError(`Failed to join ${type}. Please try again.`);
         showError("Failed to join trip. Please try again.");
         setLoading(false);
       }
@@ -85,7 +85,7 @@ export default function JoinTrip() {
     if (code) {
       findAndJoinTrip();
     }
-  }, [code, navigate, showError, showSuccess]);
+  }, [code, navigate, showError, showSuccess, type]);
 
   if (loading) {
     return (

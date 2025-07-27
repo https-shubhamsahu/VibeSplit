@@ -1,7 +1,7 @@
 {
   "name": "project",
   "version": "0.1.0",
-  "homepage": "https://https-shubhamsahu.github.io/VibeSplit",
+  "homepage": "https://shubham-chavan.github.io/VibeSplit/",
   "dependencies": {
     "@testing-library/dom": "^9.3.3",
     "@testing-library/jest-dom": "^6.1.4",

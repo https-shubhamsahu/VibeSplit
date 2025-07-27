@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import { db } from "../firebase";
-import { doc, updateDoc, arrayUnion } from "firebase/firestore";
+import { doc, updateDoc, arrayUnion, getDoc } from "firebase/firestore";
 import { useToast } from "../contexts/ToastContext";
 
 const AVATAR_EMOJIS = ["👤", "👩", "👨", "🧑", "👱"];
 
-export default function AddMember({ tripId, isGuest }) {
+export default function AddMember({ tripId, isGuest, type = "trip", label = "Add Member", onMemberAdded }) {
   const [addMethod, setAddMethod] = useState("manual");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -31,16 +31,26 @@ export default function AddMember({ tripId, isGuest }) {
     try {
       if (isGuest) {
         // Add to localStorage
-        const trips = JSON.parse(localStorage.getItem("trips") || "[]");
-        const tripIndex = trips.findIndex(t => t.id === tripId);
-        if (tripIndex !== -1) {
-          trips[tripIndex].members.push(newMember);
-          localStorage.setItem("trips", JSON.stringify(trips));
-        }
+        const items = JSON.parse(localStorage.getItem(type + "s") || "[]");
+        const itemIndex = items.findIndex(t => t.id === tripId);
+        if (itemIndex !== -1) {
+          items[itemIndex].members.push(newMember);
+          localStorage.setItem(type + "s", JSON.stringify(items));
+
+          if (onMemberAdded) onMemberAdded();
+         }
       } else {
         // Add to Firestore
-        await updateDoc(doc(db, "trips", tripId), {
+        await updateDoc(doc(db, type + "s", tripId), {
           members: arrayUnion(newMember)
+        });
+        // Fetch the updated trip doc and update memberCount in trip_history
+        import('../../services/tripHistoryService').then(async ({ default: tripHistoryService }) => {
+          const { getDoc, doc: firestoreDoc } = await import('firebase/firestore');
+          const tripDoc = await getDoc(firestoreDoc(db, type + "s", tripId));
+          const data = tripDoc.data();
+          const memberCount = data?.members?.length || 0;
+          tripHistoryService.updateMemberCountInHistory(tripId, memberCount);
         });
       }
 
@@ -49,7 +59,8 @@ export default function AddMember({ tripId, isGuest }) {
       setEmail("");
       
       // Show success toast
-      showSuccess(`${newMember.name} added to the trip!`);
+       showSuccess(`${newMember.name} added to the ${type}!`);
+       if (onMemberAdded) onMemberAdded();
     } catch (err) {
       setError("Failed to add member. Please try again.");
       showError("Failed to add member. Please try again.");
@@ -59,7 +70,7 @@ export default function AddMember({ tripId, isGuest }) {
 
   return (
     <div className="add-member-section">
-      <h3>Add Member</h3>
+      <h3>{label}</h3>
       {error && <div className="error-message">{error}</div>}
       
       <div className="add-method-toggle">

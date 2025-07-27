@@ -1,28 +1,32 @@
-import React, { useState } from "react";
+import { useState, useEffect } from "react";
 import { db } from "../firebase";
 import { doc, updateDoc } from "firebase/firestore";
 import { useToast } from "../contexts/ToastContext";
 
-export default function ShareTrip({ trip, isGuest }) {
+export default function ShareTrip({ trip, isGuest, type = "trip" }) {
   const [copied, setCopied] = useState(false);
+  const [shareCode, setShareCode] = useState(trip.joinCode || null);
   const { showSuccess, showInfo } = useToast();
-  
-  // Generate a join code if not exists
-  const generateJoinCode = () => {
-    if (trip.joinCode) return trip.joinCode;
-    const code = Math.random().toString(36).substring(2, 8).toUpperCase();
-    
-    if (!isGuest) {
-      updateDoc(doc(db, "trips", trip.id), {
-        joinCode: code
-      });
-    }
-    return code;
-  };
 
-  const shareCode = trip.joinCode || generateJoinCode();
-  // Updated to work with HashRouter - using just origin for GitHub Pages
-  const shareUrl = `${window.location.origin}/VibeSplit/#/join/${shareCode}`;
+  useEffect(() => {
+    const generateAndSetJoinCode = async () => {
+      if (trip.joinCode) {
+        setShareCode(trip.joinCode);
+        return;
+      }
+      const code = Math.random().toString(36).substring(2, 8).toUpperCase();
+      if (!isGuest) {
+        await updateDoc(doc(db, type + "s", trip.id), {
+          joinCode: code,
+        });
+      }
+      setShareCode(code);
+    };
+
+    generateAndSetJoinCode();
+  }, [trip.joinCode, isGuest, trip.id, type]);
+
+  const shareUrl = shareCode ? `${window.location.origin}${window.location.pathname}#/join/${shareCode}` : "";
 
   const copyToClipboard = (text, type) => {
     navigator.clipboard.writeText(text);

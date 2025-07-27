@@ -27,11 +27,11 @@ export default function ExpenseForm({ trip, isGuest, onExpenseAdd }) {
     try {
       if (isGuest) {
         // Add to localStorage
-        const trips = JSON.parse(localStorage.getItem("trips") || "[]");
-        const tripIndex = trips.findIndex(t => t.id === trip.id);
-        if (tripIndex !== -1) {
-          trips[tripIndex].expenses.push(newExpense);
-          localStorage.setItem("trips", JSON.stringify(trips));
+        const items = JSON.parse(localStorage.getItem(trip.type + "s") || "[]");
+        const itemIndex = items.findIndex(t => t.id === trip.id);
+        if (itemIndex !== -1) {
+          items[itemIndex].expenses.push(newExpense);
+          localStorage.setItem(trip.type + "s", JSON.stringify(items));
         }
       } else {
         // Add to Firestore

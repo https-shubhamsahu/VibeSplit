@@ -16,6 +16,7 @@ export default function TripScreen({ type = "trip" }) {
   const isGuest = location.state?.mode === "guest";
   const [trip, setTrip] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [refreshKey, setRefreshKey] = useState(0);
   
   // Get title and labels based on type
   const getTypeInfo = () => {
@@ -73,7 +74,7 @@ export default function TripScreen({ type = "trip" }) {
     };
 
     loadTrip();
-  }, [tripId, isGuest, type]);
+  }, [tripId, isGuest, type, refreshKey]);
 
   if (loading) return <LoadingSpinner />;
   if (!trip) return <div>{typeInfo.title} not found!</div>;
@@ -95,6 +96,7 @@ export default function TripScreen({ type = "trip" }) {
             isGuest={isGuest} 
             type={type} 
             label={typeInfo.memberLabel} 
+            onMemberAdded={() => setRefreshKey(prev => prev + 1)}
           />
           <MemberList members={trip.members} type={type} />
           <BalanceSheet
@@ -110,6 +112,7 @@ export default function TripScreen({ type = "trip" }) {
             isGuest={isGuest}
             type={type}
             label={typeInfo.expenseLabel}
+            onExpenseAdd={() => setRefreshKey(prev => prev + 1)}
           />
           <ExpenseList
             expenses={trip.expenses}

@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { auth, googleProvider } from "./firebase";
-import { signInWithPopup, onAuthStateChanged, signOut, browserPopupRedirectResolver } from "firebase/auth";
 import LoadingSpinner from "./components/LoadingSpinner";
+import UserHistory from "./components/UserHistory";
+import authService from "./services/authService";
+import analyticsService from "./services/analyticsService";
 
 const options = [
   {
@@ -34,11 +35,15 @@ export default function Dashboard() {
   const isAuthMode = location.state?.mode === "auth";
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(isAuthMode);
+  const [showHistory, setShowHistory] = useState(false);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
+    analyticsService.trackPageView('Dashboard');
+    
     if (isAuthMode) {
       setLoading(true);
-      const unsubscribe = onAuthStateChanged(auth, (u) => {
+      const unsubscribe = authService.onAuthStateChange((u) => {
         setUser(u);
         setLoading(false);
       });
@@ -48,35 +53,43 @@ export default function Dashboard() {
 
   const handleGoogleLogin = async () => {
     setLoading(true);
+    setError(null);
+    
     try {
-      await signInWithPopup(auth, googleProvider, browserPopupRedirectResolver);
+      await authService.signInWithGoogle();
+      analyticsService.trackUserAction('google_login_success');
     } catch (error) {
-      console.error("Login error:", error.code, error.message);
-      
-      // Handle specific error cases
-      switch (error.code) {
-        case 'auth/popup-blocked':
-          alert('Please allow popups for this website to sign in with Google');
-          break;
-        case 'auth/popup-closed-by-user':
-          // User closed the popup, no action needed
-          break;
-        case 'auth/cancelled-popup-request':
-          // Another popup is already open
-          break;
-        case 'auth/third-party-cookies-blocked':
-          alert('Please enable third-party cookies or try in regular browsing mode');
-          break;
-        default:
-          alert('Sign in failed. Please try again.');
-      }
+      console.error("Login error:", error);
+      setError(error.message);
+      analyticsService.trackError(error, { context: 'google_login' });
       setLoading(false);
     }
   };
 
   const handleLogout = async () => {
-    await signOut(auth);
-    setUser(null);
+    try {
+      await authService.signOut();
+      analyticsService.trackUserAction('logout');
+      setUser(null);
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
+  };
+
+  const handleOptionClick = (option) => {
+    analyticsService.trackUserAction('select_option', { option: option.title });
+    
+    const routes = {
+      "Plan a Trip": "/trip/new",
+      "Canteen Tracker": "/canteen/new",
+      "Outing Split": "/outing/new",
+      "Project Pool": "/project/new"
+    };
+    
+    const route = routes[option.title];
+    if (route) {
+      navigate(route, { state: { mode: isGuest ? "guest" : "auth" } });
+    }
   };
 
   if (isAuthMode && loading) {
@@ -86,8 +99,17 @@ export default function Dashboard() {
   if (isAuthMode && !user) {
     return (
       <div className="dashboard">
-        <h2 className="dashboard-title">Sign in to Join the Squad</h2>
-        <button className="main-btn" onClick={handleGoogleLogin}>Sign in with Google</button>
+        <div className="auth-container">
+          <h2 className="dashboard-title">Sign in to Join the Squad</h2>
+          {error && <div className="error-message">{error}</div>}
+          <button 
+            className="main-btn" 
+            onClick={handleGoogleLogin}
+            disabled={loading}
+          >
+            {loading ? 'Signing in...' : 'Sign in with Google'}
+          </button>
+        </div>
       </div>
     );
   }
@@ -100,36 +122,43 @@ export default function Dashboard() {
         </div>
       )}
       {isAuthMode && user && (
-        <div style={{ marginBottom: "1.2rem", color: "#78909c", fontSize: "1rem" }}>
-          Welcome, {user.displayName}! <button className="about-btn" style={{ marginLeft: 8 }} onClick={handleLogout}>Log out</button>
+        <div className="user-header">
+          <div className="welcome-message">
+            Welcome, {user.displayName}!
+          </div>
+          <div className="header-actions">
+            <button 
+              className="history-btn" 
+              onClick={() => setShowHistory(!showHistory)}
+            >
+              {showHistory ? '📊 Dashboard' : '📋 History'}
+            </button>
+            <button className="logout-btn" onClick={handleLogout}>
+              Log out
+            </button>
+          </div>
         </div>
       )}
-      <h2 className="dashboard-title">Welcome to Your Money Squad</h2>
-      <div className="option-cards">
-        {options.map((opt) => (
-          <div
-            className="option-card"
-            key={opt.title}
-            onClick={() => {
-              // All cards are now clickable and navigate to appropriate routes
-              if (opt.title === "Plan a Trip") {
-                navigate("/trip/new", { state: { mode: isGuest ? "guest" : "auth" } });
-              } else if (opt.title === "Canteen Tracker") {
-                navigate("/canteen/new", { state: { mode: isGuest ? "guest" : "auth" } });
-              } else if (opt.title === "Outing Split") {
-                navigate("/outing/new", { state: { mode: isGuest ? "guest" : "auth" } });
-              } else if (opt.title === "Project Pool") {
-                navigate("/project/new", { state: { mode: isGuest ? "guest" : "auth" } });
-              }
-            }}
-            style={{ cursor: "pointer" }}
-          >
-            <div className="option-emoji">{opt.emoji}</div>
-            <div className="option-title">{opt.title}</div>
-            <div className="option-subtitle">{opt.subtitle}</div>
+      {!showHistory ? (
+        <>
+          <h2 className="dashboard-title">Welcome to Your Money Squad</h2>
+          <div className="option-cards">
+            {options.map((opt) => (
+              <div
+                className="option-card"
+                key={opt.title}
+                onClick={() => handleOptionClick(opt)}
+              >
+                <div className="option-emoji">{opt.emoji}</div>
+                <div className="option-title">{opt.title}</div>
+                <div className="option-subtitle">{opt.subtitle}</div>
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
+        </>
+      ) : (
+        <UserHistory isGuest={isGuest} />
+      )}
     </div>
   );
 }
