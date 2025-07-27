@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { db } from "../firebase";
 import { doc, updateDoc, arrayUnion } from "firebase/firestore";
+import { useToast } from "../contexts/ToastContext";
 
 const AVATAR_EMOJIS = ["👤", "👩", "👨", "🧑", "👱"];
 
@@ -9,6 +10,7 @@ export default function AddMember({ tripId, isGuest }) {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
+  const { showSuccess, showError } = useToast();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -45,8 +47,12 @@ export default function AddMember({ tripId, isGuest }) {
       // Clear form
       setName("");
       setEmail("");
+      
+      // Show success toast
+      showSuccess(`${newMember.name} added to the trip!`);
     } catch (err) {
       setError("Failed to add member. Please try again.");
+      showError("Failed to add member. Please try again.");
       console.error("Error adding member:", err);
     }
   };

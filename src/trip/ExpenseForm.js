@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { db } from "../firebase";
 import { doc, updateDoc, arrayUnion } from "firebase/firestore";
+import { useToast } from "../contexts/ToastContext";
 
 export default function ExpenseForm({ trip, isGuest, onExpenseAdd }) {
   const [amount, setAmount] = useState("");
@@ -8,6 +9,7 @@ export default function ExpenseForm({ trip, isGuest, onExpenseAdd }) {
   const [paidBy, setPaidBy] = useState("");
   const [sharedBy, setSharedBy] = useState([]);
   const [error, setError] = useState("");
+  const { showSuccess, showError } = useToast();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -44,9 +46,13 @@ export default function ExpenseForm({ trip, isGuest, onExpenseAdd }) {
       setPaidBy("");
       setSharedBy([]);
       
+      // Show success toast
+      showSuccess(`Expense of ₹${newExpense.amount} added successfully!`);
+      
       if (onExpenseAdd) onExpenseAdd(newExpense);
     } catch (err) {
       setError("Failed to add expense. Please try again.");
+      showError("Failed to add expense. Please try again.");
       console.error("Error adding expense:", err);
     }
   };

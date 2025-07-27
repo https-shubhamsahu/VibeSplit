@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { db, auth } from "../firebase";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
-import { onAuthStateChanged } from 'firebase/auth';
+import { useToast } from "../contexts/ToastContext";
 
 const emojiOptions = ["🌴", "🎉", "🏖️", "🏕️", "🎓", "🚌", "🍔", "🎸"];
 
@@ -19,6 +19,7 @@ export default function TripForm() {
   const navigate = useNavigate();
   const location = useLocation();
   const isGuest = location.state?.mode === "guest";
+  const { showSuccess, showError } = useToast();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -27,6 +28,7 @@ export default function TripForm() {
     // Check if user is authenticated
     if (!auth.currentUser && !isGuest) {
       console.error("User not authenticated");
+      showError("You need to be logged in to create a trip.");
       setLoading(false);
       return;
     }
@@ -64,12 +66,14 @@ export default function TripForm() {
       } catch (error) {
         console.error("Error creating trip:", error);
         setError("Error creating trip. Please try again."); // Update this line
+        showError("Error creating trip. Please try again.");
         setLoading(false);
         return;
       }
     }
 
     setLoading(false);
+    showSuccess(`Trip "${name}" created successfully!`);
     navigate(`/trip/${tripId}`, { state: { mode: isGuest ? "guest" : "auth" } });
   };
 

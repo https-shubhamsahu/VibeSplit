@@ -1,9 +1,11 @@
 import React, { useState } from "react";
 import { db } from "../firebase";
 import { doc, updateDoc } from "firebase/firestore";
+import { useToast } from "../contexts/ToastContext";
 
 export default function ShareTrip({ trip, isGuest }) {
   const [copied, setCopied] = useState(false);
+  const { showSuccess, showInfo } = useToast();
   
   // Generate a join code if not exists
   const generateJoinCode = () => {
@@ -21,24 +23,25 @@ export default function ShareTrip({ trip, isGuest }) {
   const shareCode = trip.joinCode || generateJoinCode();
   const shareUrl = `${window.location.origin}/join/${shareCode}`;
 
-  const copyToClipboard = (text) => {
+  const copyToClipboard = (text, type) => {
     navigator.clipboard.writeText(text);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
+    showSuccess(`${type === 'code' ? 'Join code' : 'Share link'} copied to clipboard!`);
   };
 
   return (
     <div className="share-trip-section">
       <h3>Share Trip</h3>
       {isGuest ? (
-        <p className="share-notice">Sharing is only available for logged-in users</p>
+        <p className="share-notice" onClick={() => showInfo("Please log in to share this trip with others.")}>Sharing is only available for logged-in users</p>
       ) : (
         <div className="share-content">
           <div className="share-code-box">
             <span>Join Code:</span>
             <code>{shareCode}</code>
             <button 
-              onClick={() => copyToClipboard(shareCode)}
+              onClick={() => copyToClipboard(shareCode, 'code')}
               className="copy-btn"
             >
               {copied ? '✓ Copied!' : 'Copy'}
@@ -52,7 +55,7 @@ export default function ShareTrip({ trip, isGuest }) {
               readOnly 
             />
             <button 
-              onClick={() => copyToClipboard(shareUrl)}
+              onClick={() => copyToClipboard(shareUrl, 'link')}
               className="copy-btn"
             >
               {copied ? '✓ Copied!' : 'Copy Link'}

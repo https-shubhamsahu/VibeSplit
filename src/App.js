@@ -6,6 +6,9 @@ import About from "./About";
 import TripForm from "./trip/TripForm";
 import TripScreen from "./trip/TripScreen";
 import JoinTrip from "./trip/JoinTrip";
+import { ToastProvider } from "./contexts/ToastContext";
+import { ThemeProvider } from "./contexts/ThemeContext";
+import ThemeToggle from "./components/ThemeToggle";
 import "./styles.css";
 
 export default function App() {
@@ -13,17 +16,22 @@ export default function App() {
   const baseUrl = process.env.PUBLIC_URL || "";
 
   return (
-    <Router basename={baseUrl}>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/about" element={<About />} />
-        <Route path="/trip/new" element={<TripForm />} />
-        <Route path="/trip/:tripId" element={<TripScreen />} />
-        <Route path="/join/:code" element={<JoinTrip />} />
-        {/* Catch all route for 404 */}
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
-    </Router>
+    <ThemeProvider>
+      <ToastProvider>
+        <Router basename={baseUrl}>
+          <ThemeToggle />
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/trip/new" element={<TripForm />} />
+            <Route path="/trip/:tripId" element={<TripScreen />} />
+            <Route path="/join/:code" element={<JoinTrip />} />
+            {/* Catch all route for 404 */}
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </Router>
+      </ToastProvider>
+    </ThemeProvider>
   );
 }

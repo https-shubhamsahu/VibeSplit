@@ -8,6 +8,7 @@ import MemberList from "./MemberList";
 import ExpenseList from "./ExpenseList";
 import BalanceSheet from "./BalanceSheet";
 import ShareTrip from "./ShareTrip";
+import LoadingSpinner from "../components/LoadingSpinner";
 
 export default function TripScreen() {
   const { tripId } = useParams();
@@ -42,7 +43,7 @@ export default function TripScreen() {
     loadTrip();
   }, [tripId, isGuest]);
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) return <LoadingSpinner />;
   if (!trip) return <div>Trip not found!</div>;
 
   return (

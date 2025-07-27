@@ -2,13 +2,14 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { db, auth } from "../firebase";
 import { collection, query, where, getDocs, updateDoc, doc, arrayUnion } from "firebase/firestore";
-import { onAuthStateChanged } from 'firebase/auth';
+import { useToast } from "../contexts/ToastContext";
 
 export default function JoinTrip() {
   const { code } = useParams();
   const navigate = useNavigate();
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
+  const { showSuccess, showError } = useToast();
 
   useEffect(() => {
     const findAndJoinTrip = async () => {
@@ -20,6 +21,7 @@ export default function JoinTrip() {
 
         if (querySnapshot.empty) {
           setError("Invalid join code or trip not found");
+          showError("Invalid join code or trip not found");
           setLoading(false);
           return;
         }
@@ -44,6 +46,7 @@ export default function JoinTrip() {
               joinedAt: new Date().toISOString()
             })
           });
+          showSuccess("You've successfully joined the trip!");
           navigate(`/trip/${tripId}`, { state: { mode: "auth" } });
         } else {
           // Handle guest join
@@ -67,12 +70,14 @@ export default function JoinTrip() {
           });
           
           localStorage.setItem("trips", JSON.stringify(trips));
+          showSuccess("You've joined the trip as a guest!");
           navigate(`/trip/${tripId}`, { state: { mode: "guest" } });
         }
 
       } catch (err) {
         console.error("Error joining trip:", err);
         setError("Failed to join trip. Please try again.");
+        showError("Failed to join trip. Please try again.");
         setLoading(false);
       }
     };
@@ -80,12 +85,15 @@ export default function JoinTrip() {
     if (code) {
       findAndJoinTrip();
     }
-  }, [code, navigate]);
+  }, [code, navigate, showError, showSuccess]);
 
   if (loading) {
     return (
       <div className="join-trip-screen">
-        <div className="loading-spinner">Looking for your trip...</div>
+        <div className="loading-spinner-container">
+          <div className="loading-spinner"></div>
+          <p>Looking for your trip...</p>
+        </div>
       </div>
     );
   }

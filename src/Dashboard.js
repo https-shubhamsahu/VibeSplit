@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { auth, googleProvider } from "./firebase";
 import { signInWithPopup, onAuthStateChanged, signOut, browserPopupRedirectResolver } from "firebase/auth";
+import LoadingSpinner from "./components/LoadingSpinner";
 
 const options = [
   {
@@ -79,7 +80,7 @@ export default function Dashboard() {
   };
 
   if (isAuthMode && loading) {
-    return <div className="dashboard"><div>Loading...</div></div>;
+    return <div className="dashboard"><LoadingSpinner /></div>;
   }
 
   if (isAuthMode && !user) {
