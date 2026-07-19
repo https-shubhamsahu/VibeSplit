@@ -1,88 +1,109 @@
-# 🎉 Welcome to VibeSplit! 🎉
+# VibeSplit
 
-**Master your Money**  
-*Vibe with your crew, not your spends.*
+Split group expenses fairly, without the spreadsheet math or the awkward "you owe me" texts.
 
----
-*Brought to life by Shubham, turning an idea into action!*
+![React](https://img.shields.io/badge/React-18-61DAFB?style=flat-square&logo=react&logoColor=white)
+![Firebase](https://img.shields.io/badge/Firebase-10-FFCA28?style=flat-square&logo=firebase&logoColor=black)
+![React Router](https://img.shields.io/badge/React_Router-6-CA4245?style=flat-square&logo=reactrouter&logoColor=white)
+![Deployed on GitHub Pages](https://img.shields.io/badge/Deployed-GitHub_Pages-222?style=flat-square&logo=github)
 
-## 🍟 What is VibeSplit?
+## Overview
 
-Imagine you and your friends chilling at the canteen. You eat, laugh, and make memories. But when it’s time to settle up, nobody remembers who paid for what!  
-**VibeSplit** is your magic solution: a super-easy way to split group expenses—no more math drama, no more awkward reminders!
+VibeSplit is a group-expense tracker built for the day-to-day reality of splitting bills with friends — canteen runs, weekend trips, shared projects. Create a trip, add members, log who paid for what, and VibeSplit computes a fair settlement automatically. Guests can join a trip via a shareable link without creating an account.
 
----
+## Features
 
-## 🚀 How to Use VibeSplit
+- **Trips** — create a named trip for any occasion (outing, fest, weekend getaway)
+- **Shareable invites** — members join via a link, no account required (guest mode)
+- **Expense logging** — record who paid and who it was for; supports itemized splits
+- **Automatic settlement** — computes the minimal set of payments needed to balance everyone out
+- **Trip history** — past trips and spending are retained per user
+- **Light/dark theme** — theme preference persisted via React Context
+- **Toast notifications & error boundaries** — user-facing feedback and crash isolation
 
-1. **Open VibeSplit** in your browser.
-2. **Start a Trip:** Give your trip a fun name (like “Boisar trip” or “Lonavala weekend”).
-3. **Add Your Friends:**  
-   - Type their names or invite them with a link.  
-   - No one’s left out!
-4. **Add Expenses:**  
-   - Log every payment (‘Who paid? For whom?’)—even chips counts!
-   - VibeSplit handles the maths automatically.
-5. **See Balances:**  
-   - Tap “Settle Up” to see who owes what—no fuss!
-6. **Share the Fun:**  
-   - Share the trip link in your group chat so everyone can join, add, or settle expenses instantly.
+## Tech Stack
 
----
+| Layer | Technology |
+|---|---|
+| Frontend | React 18, React Router 6 |
+| Backend / Data | Firebase (Auth + Firestore) |
+| State | React Context (`ThemeContext`, `ToastContext`) |
+| Testing | React Testing Library |
+| Deployment | GitHub Pages (`gh-pages`) |
 
-## 🌈 Key Features
+## Getting Started
 
-- **Trips for Every Plan:** Outing, fest, or project? Start a new trip each time.
-- **Easy Member Adding:**  
-  Enter names, emails, or share links. Invite anyone!
-- **Expense Logging:**  
-  If you buy fries, add it. Someone else grabs juice? Add that too!
-- **History & Memories:**  
-  Look back at past trips and see who was the real MVP spender.
-- **Magic Splitter:**  
-  Instant, fair calculations—everyone sees their share.
-- **Guest Mode:**  
-  Don’t want to sign up? No worries—you can still use VibeSplit!
-- **Cute, Pastel Design:**  
-  Soothing colors and friendly layouts make it fun to use.
-- **Help is One Click Away:**  
-  Tap the Help button anytime for a quick guide (or DM Shubham!).
+### Prerequisites
+- Node.js 18+
+- A Firebase project (Firestore + Authentication enabled)
 
----
+### Installation
 
-## 👉 Step-by-Step Workflow
+```bash
+git clone https://github.com/https-shubhamsahu/VibeSplit.git
+cd VibeSplit
+npm install
+```
 
-- **Start:** Create a trip (e.g., “Manali trip”)
-- **Invite:** Add friends by name/link
-- **Spend:** Record who paid for what, instantly
-- **Split:** See who owes whom—automatically
-- **Settle:** Pay up and mark settled!
+Create a Firebase config in `src/firebase.js` with your project's credentials (API key, project ID, etc.).
 
-All your trips (and memories) stay saved forever.
+### Run locally
 
----
+```bash
+npm start
+```
 
-## 👦 Creator
+Opens at [http://localhost:3000](http://localhost:3000).
 
-I’m **Shubham Sahu**  
-Student at Thakur Shyamnarayan Engineering College (Electronics & Computer Engineering)  
-Obsessed with tech, programming, AI, and making cool things with friends!
+### Build & deploy
 
-> *This project was dreamed up on a canteen table at TSEC, born from real college life and squad banter.* ☕🍟✨
+```bash
+npm run build
+npm run deploy   # publishes build/ to GitHub Pages
+```
 
----
+## Project Structure
 
-## 📚 Need Help or Want to Connect?
+```
+src/
+├── App.js                  # Router + top-level layout
+├── Home.js                 # Landing page
+├── Dashboard.js            # User's trip list
+├── JoinTrip.js             # Join-by-link flow
+├── About.js
+├── components/
+│   ├── ThemeToggle.js
+│   ├── Toast.js
+│   ├── ErrorBoundary.js
+│   ├── LoadingSpinner.js
+│   └── UserHistory.js
+├── contexts/
+│   ├── ThemeContext.js
+│   └── ToastContext.js
+├── services/
+│   ├── authService.js
+│   ├── analyticsService.js
+│   ├── historyService.js
+│   └── tripHistoryService.js
+├── trip/
+│   ├── TripForm.js         # Create a trip
+│   ├── TripScreen.js       # Trip dashboard
+│   ├── AddMember.js
+│   ├── MemberList.js
+│   ├── ExpenseForm.js
+│   ├── ExpenseList.js
+│   ├── BalanceSheet.js     # Settlement calculation + display
+│   └── ShareTrip.js
+└── firebase.js              # Firebase app initialization
+```
 
-- **For instant guidance:** Tap "Help & Guide" in the app
-- **Read the full manual:**  
-  [VibeSplit README on GitHub](https://github.com/https-shubhamsahu/VibeSplit?tab=readme-ov-file#readme-ov-file)
-- **Connect/socials:**  
-  [My Beacon Socials](https://beacons.ai/shubhamsahu)
+## Contributing
 
----
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/your-feature`)
+3. Commit your changes and open a pull request
 
-## 🦄 Enjoy VibeSplit!
+## Author
 
-No more bill fights, no more maths. Just pure squad vibes.  
-Dive in, split easy, and enjoy the moments that actually matter!
+**Shubham Sahu** — Electronics & Computer Engineering, Thakur Shyamnarayan Engineering College
+[GitHub](https://github.com/https-shubhamsahu) · [Socials](https://beacons.ai/shubhamsahu)
