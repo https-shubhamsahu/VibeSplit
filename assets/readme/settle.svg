@@ -1,0 +1,173 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="700" viewBox="0 0 1200 700" role="img" aria-labelledby="title desc">
+  <title id="title">How the VibeSplit balance sheet adds up</title>
+  <desc id="desc">Worked example of the rule in BalanceSheet.js. A canteen run with four people: Vada pav 120 rupees paid by Asha and split four ways, chai 60 rupees paid by Bilal and split between Asha, Bilal and Chirag, cold coffee 200 rupees paid by Chirag and split four ways. For each expense the payer gets plus the amount and everyone in the split gets minus the amount divided by the number of people in the split. Final balances: Asha gets back 20, Bilal owes 40, Chirag gets back 100, Dev owes 80. The balances sum to zero.</desc>
+  <style>
+    @keyframes hl0{0%{opacity:0} 6%{opacity:0} 6.6%{opacity:1} 27.4%{opacity:1} 28%{opacity:0} 100%{opacity:0}}
+    .hl0{opacity:0;animation:hl0 12s linear infinite}
+    @keyframes hl1{0%{opacity:0} 28%{opacity:0} 28.6%{opacity:1} 49.4%{opacity:1} 50%{opacity:0} 100%{opacity:0}}
+    .hl1{opacity:0;animation:hl1 12s linear infinite}
+    @keyframes hl2{0%{opacity:0} 50%{opacity:0} 50.6%{opacity:1} 71.4%{opacity:1} 72%{opacity:0} 100%{opacity:0}}
+    .hl2{opacity:0;animation:hl2 12s linear infinite}
+    @keyframes bp0{0%{transform:scaleX(0.000)} 10%{transform:scaleX(0.000)} 16%{transform:scaleX(0.900)} 32%{transform:scaleX(0.900)} 38%{transform:scaleX(0.700)} 54%{transform:scaleX(0.700)} 60%{transform:scaleX(0.200)} 94%{transform:scaleX(0.200)} 99%{transform:scaleX(0.000)} 100%{transform:scaleX(0.000)}}
+    .bp0{transform-box:fill-box;transform-origin:0% 50%;transform:scaleX(0.200);animation:bp0 12s infinite;animation-timing-function:cubic-bezier(.2,.7,.2,1)}
+    @keyframes bn0{0%{transform:scaleX(-0.000)} 10%{transform:scaleX(-0.000)} 16%{transform:scaleX(0.000)} 32%{transform:scaleX(0.000)} 38%{transform:scaleX(0.000)} 54%{transform:scaleX(0.000)} 60%{transform:scaleX(0.000)} 94%{transform:scaleX(0.000)} 99%{transform:scaleX(-0.000)} 100%{transform:scaleX(-0.000)}}
+    .bn0{transform-box:fill-box;transform-origin:100% 50%;transform:scaleX(0.000);animation:bn0 12s infinite;animation-timing-function:cubic-bezier(.2,.7,.2,1)}
+    @keyframes t00{0%{opacity:1} 11.4%{opacity:1} 12%{opacity:0} 97%{opacity:0} 98.5%{opacity:1} 100%{opacity:1}}
+    .t00{opacity:0;animation:t00 12s linear infinite}
+    @keyframes t10{0%{opacity:0} 12%{opacity:0} 12.6%{opacity:1} 33.4%{opacity:1} 34%{opacity:0} 100%{opacity:0}}
+    .t10{opacity:0;animation:t10 12s linear infinite}
+    @keyframes t20{0%{opacity:0} 34%{opacity:0} 34.6%{opacity:1} 55.4%{opacity:1} 56%{opacity:0} 100%{opacity:0}}
+    .t20{opacity:0;animation:t20 12s linear infinite}
+    @keyframes t30{0%{opacity:0} 56%{opacity:0} 56.6%{opacity:1} 71.4%{opacity:1} 72%{opacity:0} 100%{opacity:0}}
+    .t30{opacity:0;animation:t30 12s linear infinite}
+    @keyframes v0{0%{opacity:0} 72%{opacity:0} 73.5%{opacity:1} 94%{opacity:1} 96%{opacity:0} 100%{opacity:0}}
+    .v0{opacity:1;animation:v0 12s linear infinite}
+    @keyframes c00{0%{opacity:0;transform:translateY(10px)} 7%{opacity:0;transform:translateY(10px)} 9%{opacity:1;transform:translateY(0px)} 27%{opacity:1;transform:translateY(0px)} 28%{opacity:0;transform:translateY(0px)} 100%{opacity:0;transform:translateY(10px)}}
+    .c00{opacity:0;animation:c00 12s infinite;animation-timing-function:cubic-bezier(.2,.7,.2,1)}
+    @keyframes c10{0%{opacity:0;transform:translateY(10px)} 29%{opacity:0;transform:translateY(10px)} 31%{opacity:1;transform:translateY(0px)} 49%{opacity:1;transform:translateY(0px)} 50%{opacity:0;transform:translateY(0px)} 100%{opacity:0;transform:translateY(10px)}}
+    .c10{opacity:0;animation:c10 12s infinite;animation-timing-function:cubic-bezier(.2,.7,.2,1)}
+    @keyframes c20{0%{opacity:0;transform:translateY(10px)} 51%{opacity:0;transform:translateY(10px)} 53%{opacity:1;transform:translateY(0px)} 71%{opacity:1;transform:translateY(0px)} 72%{opacity:0;transform:translateY(0px)} 100%{opacity:0;transform:translateY(10px)}}
+    .c20{opacity:0;animation:c20 12s infinite;animation-timing-function:cubic-bezier(.2,.7,.2,1)}
+    @keyframes bp1{0%{transform:scaleX(0.000)} 10%{transform:scaleX(0.000)} 16%{transform:scaleX(0.000)} 32%{transform:scaleX(0.000)} 38%{transform:scaleX(0.100)} 54%{transform:scaleX(0.100)} 60%{transform:scaleX(0.000)} 94%{transform:scaleX(0.000)} 99%{transform:scaleX(0.000)} 100%{transform:scaleX(0.000)}}
+    .bp1{transform-box:fill-box;transform-origin:0% 50%;transform:scaleX(0.000);animation:bp1 12s infinite;animation-timing-function:cubic-bezier(.2,.7,.2,1)}
+    @keyframes bn1{0%{transform:scaleX(-0.000)} 10%{transform:scaleX(-0.000)} 16%{transform:scaleX(0.300)} 32%{transform:scaleX(0.300)} 38%{transform:scaleX(0.000)} 54%{transform:scaleX(0.000)} 60%{transform:scaleX(0.400)} 94%{transform:scaleX(0.400)} 99%{transform:scaleX(-0.000)} 100%{transform:scaleX(-0.000)}}
+    .bn1{transform-box:fill-box;transform-origin:100% 50%;transform:scaleX(0.400);animation:bn1 12s infinite;animation-timing-function:cubic-bezier(.2,.7,.2,1)}
+    @keyframes t01{0%{opacity:1} 11.4%{opacity:1} 12%{opacity:0} 97%{opacity:0} 98.5%{opacity:1} 100%{opacity:1}}
+    .t01{opacity:0;animation:t01 12s linear infinite}
+    @keyframes t11{0%{opacity:0} 12%{opacity:0} 12.6%{opacity:1} 33.4%{opacity:1} 34%{opacity:0} 100%{opacity:0}}
+    .t11{opacity:0;animation:t11 12s linear infinite}
+    @keyframes t21{0%{opacity:0} 34%{opacity:0} 34.6%{opacity:1} 55.4%{opacity:1} 56%{opacity:0} 100%{opacity:0}}
+    .t21{opacity:0;animation:t21 12s linear infinite}
+    @keyframes t31{0%{opacity:0} 56%{opacity:0} 56.6%{opacity:1} 71.4%{opacity:1} 72%{opacity:0} 100%{opacity:0}}
+    .t31{opacity:0;animation:t31 12s linear infinite}
+    @keyframes v1{0%{opacity:0} 72%{opacity:0} 73.5%{opacity:1} 94%{opacity:1} 96%{opacity:0} 100%{opacity:0}}
+    .v1{opacity:1;animation:v1 12s linear infinite}
+    @keyframes c01{0%{opacity:0;transform:translateY(10px)} 7%{opacity:0;transform:translateY(10px)} 9%{opacity:1;transform:translateY(0px)} 27%{opacity:1;transform:translateY(0px)} 28%{opacity:0;transform:translateY(0px)} 100%{opacity:0;transform:translateY(10px)}}
+    .c01{opacity:0;animation:c01 12s infinite;animation-timing-function:cubic-bezier(.2,.7,.2,1)}
+    @keyframes c11{0%{opacity:0;transform:translateY(10px)} 29%{opacity:0;transform:translateY(10px)} 31%{opacity:1;transform:translateY(0px)} 49%{opacity:1;transform:translateY(0px)} 50%{opacity:0;transform:translateY(0px)} 100%{opacity:0;transform:translateY(10px)}}
+    .c11{opacity:0;animation:c11 12s infinite;animation-timing-function:cubic-bezier(.2,.7,.2,1)}
+    @keyframes c21{0%{opacity:0;transform:translateY(10px)} 51%{opacity:0;transform:translateY(10px)} 53%{opacity:1;transform:translateY(0px)} 71%{opacity:1;transform:translateY(0px)} 72%{opacity:0;transform:translateY(0px)} 100%{opacity:0;transform:translateY(10px)}}
+    .c21{opacity:0;animation:c21 12s infinite;animation-timing-function:cubic-bezier(.2,.7,.2,1)}
+    @keyframes bp2{0%{transform:scaleX(0.000)} 10%{transform:scaleX(0.000)} 16%{transform:scaleX(0.000)} 32%{transform:scaleX(0.000)} 38%{transform:scaleX(0.000)} 54%{transform:scaleX(0.000)} 60%{transform:scaleX(1.000)} 94%{transform:scaleX(1.000)} 99%{transform:scaleX(0.000)} 100%{transform:scaleX(0.000)}}
+    .bp2{transform-box:fill-box;transform-origin:0% 50%;transform:scaleX(1.000);animation:bp2 12s infinite;animation-timing-function:cubic-bezier(.2,.7,.2,1)}
+    @keyframes bn2{0%{transform:scaleX(-0.000)} 10%{transform:scaleX(-0.000)} 16%{transform:scaleX(0.300)} 32%{transform:scaleX(0.300)} 38%{transform:scaleX(0.500)} 54%{transform:scaleX(0.500)} 60%{transform:scaleX(0.000)} 94%{transform:scaleX(0.000)} 99%{transform:scaleX(-0.000)} 100%{transform:scaleX(-0.000)}}
+    .bn2{transform-box:fill-box;transform-origin:100% 50%;transform:scaleX(0.000);animation:bn2 12s infinite;animation-timing-function:cubic-bezier(.2,.7,.2,1)}
+    @keyframes t02{0%{opacity:1} 11.4%{opacity:1} 12%{opacity:0} 97%{opacity:0} 98.5%{opacity:1} 100%{opacity:1}}
+    .t02{opacity:0;animation:t02 12s linear infinite}
+    @keyframes t12{0%{opacity:0} 12%{opacity:0} 12.6%{opacity:1} 33.4%{opacity:1} 34%{opacity:0} 100%{opacity:0}}
+    .t12{opacity:0;animation:t12 12s linear infinite}
+    @keyframes t22{0%{opacity:0} 34%{opacity:0} 34.6%{opacity:1} 55.4%{opacity:1} 56%{opacity:0} 100%{opacity:0}}
+    .t22{opacity:0;animation:t22 12s linear infinite}
+    @keyframes t32{0%{opacity:0} 56%{opacity:0} 56.6%{opacity:1} 71.4%{opacity:1} 72%{opacity:0} 100%{opacity:0}}
+    .t32{opacity:0;animation:t32 12s linear infinite}
+    @keyframes v2{0%{opacity:0} 72%{opacity:0} 73.5%{opacity:1} 94%{opacity:1} 96%{opacity:0} 100%{opacity:0}}
+    .v2{opacity:1;animation:v2 12s linear infinite}
+    @keyframes c02{0%{opacity:0;transform:translateY(10px)} 7%{opacity:0;transform:translateY(10px)} 9%{opacity:1;transform:translateY(0px)} 27%{opacity:1;transform:translateY(0px)} 28%{opacity:0;transform:translateY(0px)} 100%{opacity:0;transform:translateY(10px)}}
+    .c02{opacity:0;animation:c02 12s infinite;animation-timing-function:cubic-bezier(.2,.7,.2,1)}
+    @keyframes c12{0%{opacity:0;transform:translateY(10px)} 29%{opacity:0;transform:translateY(10px)} 31%{opacity:1;transform:translateY(0px)} 49%{opacity:1;transform:translateY(0px)} 50%{opacity:0;transform:translateY(0px)} 100%{opacity:0;transform:translateY(10px)}}
+    .c12{opacity:0;animation:c12 12s infinite;animation-timing-function:cubic-bezier(.2,.7,.2,1)}
+    @keyframes c22{0%{opacity:0;transform:translateY(10px)} 51%{opacity:0;transform:translateY(10px)} 53%{opacity:1;transform:translateY(0px)} 71%{opacity:1;transform:translateY(0px)} 72%{opacity:0;transform:translateY(0px)} 100%{opacity:0;transform:translateY(10px)}}
+    .c22{opacity:0;animation:c22 12s infinite;animation-timing-function:cubic-bezier(.2,.7,.2,1)}
+    @keyframes bp3{0%{transform:scaleX(0.000)} 10%{transform:scaleX(0.000)} 16%{transform:scaleX(0.000)} 32%{transform:scaleX(0.000)} 38%{transform:scaleX(0.000)} 54%{transform:scaleX(0.000)} 60%{transform:scaleX(0.000)} 94%{transform:scaleX(0.000)} 99%{transform:scaleX(0.000)} 100%{transform:scaleX(0.000)}}
+    .bp3{transform-box:fill-box;transform-origin:0% 50%;transform:scaleX(0.000);animation:bp3 12s infinite;animation-timing-function:cubic-bezier(.2,.7,.2,1)}
+    @keyframes bn3{0%{transform:scaleX(-0.000)} 10%{transform:scaleX(-0.000)} 16%{transform:scaleX(0.300)} 32%{transform:scaleX(0.300)} 38%{transform:scaleX(0.300)} 54%{transform:scaleX(0.300)} 60%{transform:scaleX(0.800)} 94%{transform:scaleX(0.800)} 99%{transform:scaleX(-0.000)} 100%{transform:scaleX(-0.000)}}
+    .bn3{transform-box:fill-box;transform-origin:100% 50%;transform:scaleX(0.800);animation:bn3 12s infinite;animation-timing-function:cubic-bezier(.2,.7,.2,1)}
+    @keyframes t03{0%{opacity:1} 11.4%{opacity:1} 12%{opacity:0} 97%{opacity:0} 98.5%{opacity:1} 100%{opacity:1}}
+    .t03{opacity:0;animation:t03 12s linear infinite}
+    @keyframes t13{0%{opacity:0} 12%{opacity:0} 12.6%{opacity:1} 33.4%{opacity:1} 34%{opacity:0} 100%{opacity:0}}
+    .t13{opacity:0;animation:t13 12s linear infinite}
+    @keyframes t23{0%{opacity:0} 34%{opacity:0} 34.6%{opacity:1} 55.4%{opacity:1} 56%{opacity:0} 100%{opacity:0}}
+    .t23{opacity:0;animation:t23 12s linear infinite}
+    @keyframes t33{0%{opacity:0} 56%{opacity:0} 56.6%{opacity:1} 71.4%{opacity:1} 72%{opacity:0} 100%{opacity:0}}
+    .t33{opacity:0;animation:t33 12s linear infinite}
+    @keyframes v3{0%{opacity:0} 72%{opacity:0} 73.5%{opacity:1} 94%{opacity:1} 96%{opacity:0} 100%{opacity:0}}
+    .v3{opacity:1;animation:v3 12s linear infinite}
+    @keyframes c03{0%{opacity:0;transform:translateY(10px)} 7%{opacity:0;transform:translateY(10px)} 9%{opacity:1;transform:translateY(0px)} 27%{opacity:1;transform:translateY(0px)} 28%{opacity:0;transform:translateY(0px)} 100%{opacity:0;transform:translateY(10px)}}
+    .c03{opacity:0;animation:c03 12s infinite;animation-timing-function:cubic-bezier(.2,.7,.2,1)}
+    @keyframes c13{0%{opacity:0;transform:translateY(10px)} 29%{opacity:0;transform:translateY(10px)} 31%{opacity:1;transform:translateY(0px)} 49%{opacity:1;transform:translateY(0px)} 50%{opacity:0;transform:translateY(0px)} 100%{opacity:0;transform:translateY(10px)}}
+    .c13{opacity:0;animation:c13 12s infinite;animation-timing-function:cubic-bezier(.2,.7,.2,1)}
+    @keyframes c23{0%{opacity:0;transform:translateY(10px)} 51%{opacity:0;transform:translateY(10px)} 53%{opacity:1;transform:translateY(0px)} 71%{opacity:1;transform:translateY(0px)} 72%{opacity:0;transform:translateY(0px)} 100%{opacity:0;transform:translateY(10px)}}
+    .c23{opacity:0;animation:c23 12s infinite;animation-timing-function:cubic-bezier(.2,.7,.2,1)}
+    @keyframes sum{0%{opacity:0} 72%{opacity:0} 73.5%{opacity:1} 94%{opacity:1} 96%{opacity:0} 100%{opacity:0}}
+    .sum{opacity:1;animation:sum 12s linear infinite}
+    @media (prefers-reduced-motion: reduce){*{animation:none !important}}
+  </style>
+  <rect width="1200" height="700" rx="24" fill="#2a2320"/>
+  <text x="48" y="66" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="34" font-weight="800" fill="#f4ecdc">How the balance sheet adds up</text>
+  <text x="48" y="102" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="20" fill="#bfb3a1">For each expense: the payer gets +amount, everyone in the split gets −amount ÷ n.</text>
+  <path d="M64 136 H472 Q488 136 488 152 V648 L478 660 L468 648 L458 660 L448 648 L438 660 L428 648 L418 660 L408 648 L398 660 L388 648 L378 660 L368 648 L358 660 L348 648 L338 660 L328 648 L318 660 L308 648 L298 660 L288 648 L278 660 L268 648 L258 660 L248 648 L238 660 L228 648 L218 660 L208 648 L198 660 L188 648 L178 660 L168 648 L158 660 L148 648 L138 660 L128 648 L118 660 L108 648 L98 660 L88 648 L78 660 L68 648 L58 660 L48 648 L48 648 V152 Q48 136 64 136 Z" fill="#f4ecdc"/>
+  <text x="76" y="182" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace" font-size="24" font-weight="700" fill="#1c1a17">Canteen run</text>
+  <text x="76" y="212" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace" font-size="18" fill="#6b6358">4 people · 3 expenses</text>
+  <line x1="76" y1="232" x2="460" y2="232" stroke="#6b6358" stroke-width="2" stroke-dasharray="5 6"/>
+  <rect class="hl0" x="62" y="246" width="412" height="86" rx="8" fill="#f2c94c" fill-opacity=".6"/>
+  <text x="76" y="280" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace" font-size="24" font-weight="700" fill="#1c1a17">Vada pav ×4</text>
+  <text x="460" y="280" text-anchor="end" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace" font-size="24" font-weight="700" fill="#1c1a17">₹120</text>
+  <text x="76" y="312" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace" font-size="18" fill="#6b6358">Asha paid · split 4 ways</text>
+  <rect class="hl1" x="62" y="342" width="412" height="86" rx="8" fill="#f2c94c" fill-opacity=".6"/>
+  <text x="76" y="376" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace" font-size="24" font-weight="700" fill="#1c1a17">Chai ×3</text>
+  <text x="460" y="376" text-anchor="end" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace" font-size="24" font-weight="700" fill="#1c1a17">₹60</text>
+  <text x="76" y="408" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace" font-size="18" fill="#6b6358">Bilal paid · Dev not in it</text>
+  <rect class="hl2" x="62" y="438" width="412" height="86" rx="8" fill="#f2c94c" fill-opacity=".6"/>
+  <text x="76" y="472" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace" font-size="24" font-weight="700" fill="#1c1a17">Cold coffee ×4</text>
+  <text x="460" y="472" text-anchor="end" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace" font-size="24" font-weight="700" fill="#1c1a17">₹200</text>
+  <text x="76" y="504" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace" font-size="18" fill="#6b6358">Chirag paid · split 4 ways</text>
+  <line x1="76" y1="544" x2="460" y2="544" stroke="#6b6358" stroke-width="2" stroke-dasharray="5 6"/>
+  <text x="76" y="584" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace" font-size="24" font-weight="700" fill="#1c1a17">Total</text>
+  <text x="460" y="584" text-anchor="end" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace" font-size="24" font-weight="700" fill="#1c1a17">₹380</text>
+  <text x="570" y="634" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="18" fill="#bfb3a1">owes</text>
+  <text x="850" y="634" text-anchor="middle" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace" font-size="18" fill="#bfb3a1">0</text>
+  <text x="1130" y="634" text-anchor="end" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="18" fill="#bfb3a1">gets back</text>
+  <text x="548" y="178" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="24" font-weight="700" fill="#f4ecdc">Asha</text>
+  <rect x="560" y="196" width="580" height="36" rx="8" fill="#3b322d"/>
+  <line x1="850" y1="190" x2="850" y2="238" stroke="#bfb3a1" stroke-width="2"/>
+  <rect class="bp0" x="850" y="200" width="280" height="28" rx="5" fill="#19b3a0"/>
+  <rect class="bn0" x="570" y="200" width="280" height="28" rx="5" fill="#e5534b"/>
+  <text class="t00" x="1152" y="178" text-anchor="end" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace" font-size="24" font-weight="700" fill="#bfb3a1">₹0</text>
+  <text class="t10" x="1152" y="178" text-anchor="end" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace" font-size="24" font-weight="700" fill="#45d0bd">+₹90</text>
+  <text class="t20" x="1152" y="178" text-anchor="end" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace" font-size="24" font-weight="700" fill="#45d0bd">+₹70</text>
+  <text class="t30" x="1152" y="178" text-anchor="end" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace" font-size="24" font-weight="700" fill="#45d0bd">+₹20</text>
+  <text class="v0" x="1152" y="178" text-anchor="end" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace" font-size="24" font-weight="700" fill="#45d0bd">Gets back ₹20.00</text>
+  <g class="c00"><rect x="680" y="154" width="124" height="34" rx="17" fill="#3b322d"/><text x="694" y="178" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace" font-size="20" font-weight="700"><tspan fill="#45d0bd">+120</tspan><tspan fill="#ff8a80" dx="12">−30</tspan></text></g>
+  <g class="c10"><rect x="680" y="154" width="64" height="34" rx="17" fill="#3b322d"/><text x="694" y="178" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace" font-size="20" font-weight="700"><tspan fill="#ff8a80">−20</tspan></text></g>
+  <g class="c20"><rect x="680" y="154" width="64" height="34" rx="17" fill="#3b322d"/><text x="694" y="178" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace" font-size="20" font-weight="700"><tspan fill="#ff8a80">−50</tspan></text></g>
+  <text x="548" y="298" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="24" font-weight="700" fill="#f4ecdc">Bilal</text>
+  <rect x="560" y="316" width="580" height="36" rx="8" fill="#3b322d"/>
+  <line x1="850" y1="310" x2="850" y2="358" stroke="#bfb3a1" stroke-width="2"/>
+  <rect class="bp1" x="850" y="320" width="280" height="28" rx="5" fill="#19b3a0"/>
+  <rect class="bn1" x="570" y="320" width="280" height="28" rx="5" fill="#e5534b"/>
+  <text class="t01" x="1152" y="298" text-anchor="end" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace" font-size="24" font-weight="700" fill="#bfb3a1">₹0</text>
+  <text class="t11" x="1152" y="298" text-anchor="end" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace" font-size="24" font-weight="700" fill="#ff8a80">−₹30</text>
+  <text class="t21" x="1152" y="298" text-anchor="end" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace" font-size="24" font-weight="700" fill="#45d0bd">+₹10</text>
+  <text class="t31" x="1152" y="298" text-anchor="end" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace" font-size="24" font-weight="700" fill="#ff8a80">−₹40</text>
+  <text class="v1" x="1152" y="298" text-anchor="end" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace" font-size="24" font-weight="700" fill="#ff8a80">Owes ₹40.00</text>
+  <g class="c01"><rect x="680" y="274" width="64" height="34" rx="17" fill="#3b322d"/><text x="694" y="298" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace" font-size="20" font-weight="700"><tspan fill="#ff8a80">−30</tspan></text></g>
+  <g class="c11"><rect x="680" y="274" width="112" height="34" rx="17" fill="#3b322d"/><text x="694" y="298" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace" font-size="20" font-weight="700"><tspan fill="#45d0bd">+60</tspan><tspan fill="#ff8a80" dx="12">−20</tspan></text></g>
+  <g class="c21"><rect x="680" y="274" width="64" height="34" rx="17" fill="#3b322d"/><text x="694" y="298" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace" font-size="20" font-weight="700"><tspan fill="#ff8a80">−50</tspan></text></g>
+  <text x="548" y="418" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="24" font-weight="700" fill="#f4ecdc">Chirag</text>
+  <rect x="560" y="436" width="580" height="36" rx="8" fill="#3b322d"/>
+  <line x1="850" y1="430" x2="850" y2="478" stroke="#bfb3a1" stroke-width="2"/>
+  <rect class="bp2" x="850" y="440" width="280" height="28" rx="5" fill="#19b3a0"/>
+  <rect class="bn2" x="570" y="440" width="280" height="28" rx="5" fill="#e5534b"/>
+  <text class="t02" x="1152" y="418" text-anchor="end" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace" font-size="24" font-weight="700" fill="#bfb3a1">₹0</text>
+  <text class="t12" x="1152" y="418" text-anchor="end" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace" font-size="24" font-weight="700" fill="#ff8a80">−₹30</text>
+  <text class="t22" x="1152" y="418" text-anchor="end" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace" font-size="24" font-weight="700" fill="#ff8a80">−₹50</text>
+  <text class="t32" x="1152" y="418" text-anchor="end" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace" font-size="24" font-weight="700" fill="#45d0bd">+₹100</text>
+  <text class="v2" x="1152" y="418" text-anchor="end" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace" font-size="24" font-weight="700" fill="#45d0bd">Gets back ₹100.00</text>
+  <g class="c02"><rect x="680" y="394" width="64" height="34" rx="17" fill="#3b322d"/><text x="694" y="418" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace" font-size="20" font-weight="700"><tspan fill="#ff8a80">−30</tspan></text></g>
+  <g class="c12"><rect x="680" y="394" width="64" height="34" rx="17" fill="#3b322d"/><text x="694" y="418" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace" font-size="20" font-weight="700"><tspan fill="#ff8a80">−20</tspan></text></g>
+  <g class="c22"><rect x="680" y="394" width="124" height="34" rx="17" fill="#3b322d"/><text x="694" y="418" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace" font-size="20" font-weight="700"><tspan fill="#45d0bd">+200</tspan><tspan fill="#ff8a80" dx="12">−50</tspan></text></g>
+  <text x="548" y="538" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="24" font-weight="700" fill="#f4ecdc">Dev</text>
+  <rect x="560" y="556" width="580" height="36" rx="8" fill="#3b322d"/>
+  <line x1="850" y1="550" x2="850" y2="598" stroke="#bfb3a1" stroke-width="2"/>
+  <rect class="bp3" x="850" y="560" width="280" height="28" rx="5" fill="#19b3a0"/>
+  <rect class="bn3" x="570" y="560" width="280" height="28" rx="5" fill="#e5534b"/>
+  <text class="t03" x="1152" y="538" text-anchor="end" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace" font-size="24" font-weight="700" fill="#bfb3a1">₹0</text>
+  <text class="t13" x="1152" y="538" text-anchor="end" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace" font-size="24" font-weight="700" fill="#ff8a80">−₹30</text>
+  <text class="t23" x="1152" y="538" text-anchor="end" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace" font-size="24" font-weight="700" fill="#ff8a80">−₹30</text>
+  <text class="t33" x="1152" y="538" text-anchor="end" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace" font-size="24" font-weight="700" fill="#ff8a80">−₹80</text>
+  <text class="v3" x="1152" y="538" text-anchor="end" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace" font-size="24" font-weight="700" fill="#ff8a80">Owes ₹80.00</text>
+  <g class="c03"><rect x="680" y="514" width="64" height="34" rx="17" fill="#3b322d"/><text x="694" y="538" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace" font-size="20" font-weight="700"><tspan fill="#ff8a80">−30</tspan></text></g>
+  <g class="c13"><rect x="680" y="514" width="172" height="34" rx="17" fill="#3b322d"/><text x="694" y="538" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace" font-size="20" font-weight="700"><tspan fill="#bfb3a1">not in split</tspan></text></g>
+  <g class="c23"><rect x="680" y="514" width="64" height="34" rx="17" fill="#3b322d"/><text x="694" y="538" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace" font-size="20" font-weight="700"><tspan fill="#ff8a80">−50</tspan></text></g>
+  <text class="sum" x="1152" y="676" text-anchor="end" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace" font-size="22" font-weight="700" fill="#f4ecdc">20 − 40 + 100 − 80 = ₹0</text>
+</svg>
